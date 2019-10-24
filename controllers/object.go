@@ -36,6 +36,7 @@ func (o *ObjectController) Get() {
 	objectId := o.Ctx.Input.Param(":objectId")
 	if objectId != "" {
 		ob, err := models.GetOne(objectId)
+		
 		if err != nil {
 			o.Data["json"] = err.Error()
 		} else {

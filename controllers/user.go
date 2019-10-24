@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"api/models"
 	"strconv"
 	"github.com/astaxie/beego"
+	"api/models"
 )
 
 // Operations about Users
@@ -19,16 +19,18 @@ type UserController struct {
 // @router /:uid [get]
 func (u *UserController) Get() {
 	uid := u.GetString(":uid")
-	uid, err := strconv.Atoi(uid)
-	
-	if uid != "" {
-		user, err := models.GetUserById(uid)
-		if err != nil {
-			u.Data["json"] = err.Error()
-		} else {
-			u.Data["json"] = user
+	cid,error := strconv.Atoi(uid)
+	if error == nil{
+		ob, error := models.GetUserById(cid)
+		if error !=nil {
+			u.Data["json"] = error
+		}else{
+			u.Data["json"] = ob
 		}
+		
 	}
 	u.ServeJSON()
 }
+
+
 
