@@ -35,8 +35,14 @@ func (this *AccountController) Login(){
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println(user.Username)
-	this.Data["json"] = "账号或者密码错误!"
+	this.Data["json"] = user.Username
 	this.ServeJSON()
+}
+
+// @Title Test
+// @Description account Test
+// @router /Test [get]
+func (this *AccountController) Test(){
+	fmt.Println("aaa");
 }
 

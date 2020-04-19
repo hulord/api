@@ -29,95 +29,127 @@ paths:
             $ref: '#/definitions/models.User'
         "403":
           description: username or password is wrong
-  /object/:
+  /account/Test:
     get:
       tags:
-      - object
-      description: get all objects
-      operationId: ObjectController.GetAll
+      - account
+      description: account Test
+      operationId: AccountController.Test
+  /artical/:
+    get:
+      tags:
+      - artical
+      description: get Artical
+      operationId: ArticalController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
       responses:
         "200":
           description: ""
           schema:
-            $ref: '#/definitions/models.Object'
+            $ref: '#/definitions/models.Artical'
         "403":
-          description: :objectId is empty
+          description: ""
     post:
       tags:
-      - object
-      description: create object
-      operationId: ObjectController.Create
+      - artical
+      description: create Artical
+      operationId: ArticalController.Post
       parameters:
       - in: body
         name: body
-        description: The object content
+        description: body for Artical content
         required: true
         schema:
-          $ref: '#/definitions/models.Object'
+          $ref: '#/definitions/models.Artical'
       responses:
-        "200":
-          description: '{string} models.Object.Id'
+        "201":
+          description: '{int} models.Artical'
         "403":
           description: body is empty
-  /object/{objectId}:
+  /artical/{id}:
     get:
       tags:
-      - object
-      description: find object by objectid
-      operationId: ObjectController.Get
+      - artical
+      description: get Artical by id
+      operationId: ArticalController.Get One
       parameters:
       - in: path
-        name: objectId
-        description: the objectid you want to get
+        name: id
+        description: The key for staticblock
         required: true
         type: string
       responses:
         "200":
           description: ""
           schema:
-            $ref: '#/definitions/models.Object'
+            $ref: '#/definitions/models.Artical'
         "403":
-          description: :objectId is empty
+          description: :id is empty
     put:
       tags:
-      - object
-      description: update the object
-      operationId: ObjectController.Update
+      - artical
+      description: update the Artical
+      operationId: ArticalController.Put
       parameters:
       - in: path
-        name: objectId
-        description: The objectid you want to update
+        name: id
+        description: The id you want to update
         required: true
         type: string
       - in: body
         name: body
-        description: The body
+        description: body for Artical content
         required: true
         schema:
-          $ref: '#/definitions/models.Object'
+          $ref: '#/definitions/models.Artical'
       responses:
         "200":
           description: ""
           schema:
-            $ref: '#/definitions/models.Object'
+            $ref: '#/definitions/models.Artical'
         "403":
-          description: :objectId is empty
+          description: :id is not int
     delete:
       tags:
-      - object
-      description: delete the object
-      operationId: ObjectController.Delete
+      - artical
+      description: delete the Artical
+      operationId: ArticalController.Delete
       parameters:
       - in: path
-        name: objectId
-        description: The objectId you want to delete
+        name: id
+        description: The id you want to delete
         required: true
         type: string
       responses:
         "200":
           description: '{string} delete success!'
         "403":
-          description: objectId is empty
+          description: id is empty
   /user/{uid}:
     get:
       tags:
@@ -137,7 +169,39 @@ paths:
             $ref: '#/definitions/models.User'
         "403":
           description: :uid is empty
+  /user/Login:
+    post:
+      tags:
+      - user
+      description: user login
+      operationId: UserController.Login
+      parameters:
+      - in: password
+        name: username
+        description: "true"
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.User'
+        "403":
+          description: username or password is wrong
 definitions:
+  models.Artical:
+    title: Artical
+    type: object
+    properties:
+      Content:
+        type: string
+      CreateTime:
+        type: integer
+        format: int64
+      Id:
+        type: integer
+        format: int64
+      Title:
+        type: string
   models.Object:
     title: Object
     type: object
@@ -161,20 +225,20 @@ definitions:
         type: string
       Gender:
         type: string
-      Id:
-        type: integer
-        format: int64
       Password:
         type: string
-      Username:
+      id:
+        type: integer
+        format: int64
+      userName:
         type: string
 tags:
-- name: object
+- name: artical
   description: |
-    Operations about object
-- name: user
-  description: |
-    Operations about Users
+    ArticalController operations for Artical
 - name: account
   description: |
     Operations about Account
+- name: user
+  description: |
+    Operations about Users
