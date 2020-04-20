@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"api/models"
 	"encoding/json"
+	config "github.com/astaxie/beego/config"
+
 )
 
 // Operations about Users
@@ -26,17 +28,30 @@ func (u *UserController) Login(){
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	var user models.User
-	user,err = models.GetUserByUsername(login_user.Username)
+	iniconf,err  := config.NewConfig("ini","conf/app.conf")
 	if err != nil {
 		fmt.Println(err.Error())
-	}
-	if user.Id!=0 {
-		if user.Password == login_user.Password {
-			u.ApiJsonReturn(0, "登录成功",user)
+	} else {
+		accessToken := iniconf.String("accessToken")
+		is_login := u.GetSession("accessToken") 
+		if is_login!=nil {
+			u.ApiJsonReturn(0, "登录成功",is_login)
+		}else{
+			var user models.User
+			user,err = models.GetUserByUsername(login_user.Username)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+	
+			if user.Id!=0 {
+				if user.Password == login_user.Password {
+					u.SetSession( accessToken, user )
+					u.ApiJsonReturn(0, "登录成功",user)
+				}
+			}else{	
+				u.ApiJsonReturn(1, "无效的用户名和密码",a)	
+			}
 		}
-	}else{	
-		u.ApiJsonReturn(1, "无效的用户名和密码",a)	
 	}
 }
 

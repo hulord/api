@@ -36,15 +36,6 @@ func init() {
 
     beego.GlobalControllerRouter["api/controllers:ArticalController"] = append(beego.GlobalControllerRouter["api/controllers:ArticalController"],
         beego.ControllerComments{
-            Method: "GetAll",
-            Router: `/`,
-            AllowHTTPMethods: []string{"get"},
-            MethodParams: param.Make(),
-            Filters: nil,
-            Params: nil})
-
-    beego.GlobalControllerRouter["api/controllers:ArticalController"] = append(beego.GlobalControllerRouter["api/controllers:ArticalController"],
-        beego.ControllerComments{
             Method: "GetOne",
             Router: `/:id`,
             AllowHTTPMethods: []string{"get"},
@@ -66,6 +57,15 @@ func init() {
             Method: "Delete",
             Router: `/:id`,
             AllowHTTPMethods: []string{"delete"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["api/controllers:ArticalController"] = append(beego.GlobalControllerRouter["api/controllers:ArticalController"],
+        beego.ControllerComments{
+            Method: "GetAll",
+            Router: `/getall`,
+            AllowHTTPMethods: []string{"get"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})

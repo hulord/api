@@ -53,6 +53,34 @@
             }
         },
         "/artical/": {
+            "post": {
+                "tags": [
+                    "artical"
+                ],
+                "description": "create Artical",
+                "operationId": "ArticalController.Post",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Artical content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Artical"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int} models.Artical"
+                    },
+                    "403": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/artical/getall": {
             "get": {
                 "tags": [
                     "artical"
@@ -106,32 +134,6 @@
                     },
                     "403": {
                         "description": ""
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "artical"
-                ],
-                "description": "create Artical",
-                "operationId": "ArticalController.Post",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "body for Artical content",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Artical"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "{int} models.Artical"
-                    },
-                    "403": {
-                        "description": "body is empty"
                     }
                 }
             }
