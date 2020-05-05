@@ -17,6 +17,7 @@ type User struct {
 	Age      string		`json:"Age"`
 	Address  string		`json:"Address"`
 	Email    string		`json:"Email"`
+	Role     int        `json:"Role"`
 }
 
 func GetUserById(id int) (u User, err error) {

@@ -1,12 +1,9 @@
 package controllers
 
 import (
-	"fmt"
 	"strconv"
 	"api/models"
 	"encoding/json"
-	config "github.com/astaxie/beego/config"
-
 )
 
 // Operations about Users
@@ -22,37 +19,26 @@ type UserController struct {
 // @router /Login [post]
 func (u *UserController) Login(){
 	var login_user models.User
-	var a interface {} = nil
 	data := u.Ctx.Input.RequestBody
 	err := json.Unmarshal(data, &login_user)
 	if err != nil {
-		fmt.Println(err.Error())
+		u.ApiJsonReturn(1, "无效的用户名和密码","")
 	}
-	iniconf,err  := config.NewConfig("ini","conf/app.conf")
+
+	var user models.User
+	user,err = models.GetUserByUsername(login_user.Username)
 	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		accessToken := iniconf.String("accessToken")
-		is_login := u.GetSession("accessToken") 
-		if is_login!=nil {
-			u.ApiJsonReturn(0, "登录成功",is_login)
-		}else{
-			var user models.User
-			user,err = models.GetUserByUsername(login_user.Username)
-			if err != nil {
-				fmt.Println(err.Error())
-			}
-	
-			if user.Id!=0 {
-				if user.Password == login_user.Password {
-					u.SetSession( accessToken, user )
-					u.ApiJsonReturn(0, "登录成功",user)
-				}
-			}else{	
-				u.ApiJsonReturn(1, "无效的用户名和密码",a)	
-			}
-		}
+		u.ApiJsonReturn(1, "无效的用户名和密码","")
 	}
+	if user.Id!=0 {
+		if user.Password == login_user.Password {
+			token,_ := CreateToken(user,6000)
+			u.ApiJsonReturn(0, "登录成功",token)
+		}
+	}else{	
+		u.ApiJsonReturn(1, "无效的用户名和密码","")	
+	}
+
 }
 
 // @Title Get

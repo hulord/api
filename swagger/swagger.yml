@@ -228,6 +228,9 @@ definitions:
         type: string
       Password:
         type: string
+      Role:
+        type: integer
+        format: int64
       id:
         type: integer
         format: int64
