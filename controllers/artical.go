@@ -7,18 +7,18 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"github.com/astaxie/beego"
 )
 
 // ArticalController operations for Artical
 type ArticalController struct {
-	beego.Controller
+	BaseController
 }
 
 // URLMapping ...
 func (c *ArticalController) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
+	c.Mapping("test1", c.Test1)
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
@@ -115,10 +115,6 @@ func (c *ArticalController) GetAll() {
 			}
 			k, v := kv[0], kv[1]
 			query[k] = v
-		}
-		//新增查询权限操作
-		if c.Role {
-			fmt.Println(c.Role)
 		}
 	}
 
