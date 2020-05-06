@@ -13,22 +13,14 @@ import (
 type BaseController struct {
 	beego.Controller
 	isLogin bool     	//验证是否登录
-	User models.User 	//登录的用户
+	Role int
+	Username string
 }
 
 const (
 	KEY string = "JWT-ARY-STARK"
 	DEFAULT_EXPIRE_SECONDS int = 600 // default 10 minutes
 )
-
-
-// JWT -- json web token
-// HEADER PAYLOAD SIGNATURE
-// This struct is the PAYLOAD
-type MyCustomClaims struct {
-	models.User
-	jwt.StandardClaims
-}
 
 type JsonReturn struct {
 	Status int		    `json:"status"`
@@ -45,10 +37,17 @@ func (b *BaseController) Prepare() {
 	if utils.IsContain(LimitUri,b.Ctx.Request.RequestURI){
 		 isFlag = true
 	}
-	if !isFlag && b.Ctx.Input.Header("Authorization") == "" {
-		b.User = models.User{Username:"游客",Role:3} 			//Token为空是游客登录
-		// beego.Error("without token, unauthorized !!")
-		// b.ApiJsonReturn(1, "no permission","")
+
+	if b.Ctx.Input.Header("Authorization") == "" {
+		//允许游客查看的路由
+		if isFlag {
+			b.Role = 3
+			b.Username = "游客"  //Token为空是游客登录
+		//禁止路由
+		}else{
+			 beego.Error("without token, unauthorized !!")
+			 b.ApiJsonReturn(1, "no permission","")
+		}
 	} 
 	if !isFlag && b.Ctx.Input.Header("Authorization") != "" {
 		authString := b.Ctx.Input.Header("Authorization")
@@ -64,7 +63,9 @@ func (b *BaseController) Prepare() {
 		if err!=nil {
 			b.ApiJsonReturn(1, "AuthString invalid","")
 		}
-		fmt.Println( claims["username"].(string))
+		b.isLogin = true
+		b.Role = claims["role"].(int)
+		b.Username = claims["username"].(string)
 	}
 }
 
@@ -89,6 +90,7 @@ func CreateToken(user models.User,expiredSeconds int)(tokenss string,err error){
 	//自定义claim
 	claim := jwt.MapClaims{
 		"username": user.Username,
+		"Role":user.Role,
 		"nbf":  time.Now().Unix(),
 		"iat":  time.Now().Unix(),
 		"exp":  expireAt,
@@ -125,51 +127,6 @@ func ParseToken(tokenss string)(j jwt.MapClaims,err error){
 
     return claim,nil
 }
-
-func GenerateToken(user models.User,expiredSeconds int) (tokenString string) {
-	if expiredSeconds == 0 {
-		expiredSeconds = DEFAULT_EXPIRE_SECONDS
-	}
-   // Create the Claims
-   mySigningKey := []byte(KEY)
-   expireAt  := time.Now().Add(time.Second * time.Duration(expiredSeconds)).Unix()
-   //fmt.Println("token will be expired at ", time.Unix(expireAt, 0) )
-   // pass parameter to this func or not
-   user = models.User{Id:1,Username:"abc",Password:"ff",Gender:"ff",Age:"ff",Address:"ff",Email:"s",Role:1}
-   claims := MyCustomClaims{
-	   user,
-	   jwt.StandardClaims{
-		   ExpiresAt: expireAt,
-		   Issuer:    user.Username,
-		   IssuedAt:  time.Now().Unix(),
-	   },
-   }
-   token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-   tokenStr, err := token.SignedString(mySigningKey)
-   if err != nil {
-	   fmt.Println("generate json web token failed !! error :", err)
-   }
-   return tokenStr
-}
-
-
-// 校验token是否有效
-func CheckToken(tokenString string) jwt.MapClaims {
-    token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-        return KEY, nil
-    })
-	if err != nil {
-		fmt.Println("HS256的token解析错误，err:", err)
-		return nil
-	}
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		fmt.Println("ParseHStoken:claims类型转换失败")
-		return nil
-	}
-    return claims
-}
-
 
 //元素是否中数组中
 func IsContain(items []string, item string) bool {

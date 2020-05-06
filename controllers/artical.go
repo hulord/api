@@ -4,6 +4,7 @@ import (
 	"api/models"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"github.com/astaxie/beego"
@@ -79,11 +80,10 @@ func (c *ArticalController) GetOne() {
 func (c *ArticalController) GetAll() {
 	var fields []string
 	var sortby []string
-	var order []string
+	var order  []string
 	var query = make(map[string]string)
 	var limit int64 = 10
 	var offset int64
-
 	// fields: col1,col2,entity.col3
 	if v := c.GetString("fields"); v != "" {
 		fields = strings.Split(v, ",")
@@ -116,9 +116,13 @@ func (c *ArticalController) GetAll() {
 			k, v := kv[0], kv[1]
 			query[k] = v
 		}
+		//新增查询权限操作
+		if c.Role {
+			fmt.Println(c.Role)
+		}
 	}
 
-	l, err := models.GetAllArtical(query, fields, sortby, order, offset, limit)
+	l, err := models.GetAllArtical(query, fields, sortby, order,offset, limit)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {

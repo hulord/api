@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-
 	"github.com/astaxie/beego/orm"
 )
 
 type Artical struct {
-	Id         int    `orm:"column(id);auto"`
-	Title      string `orm:"column(title);size(150);null"`
-	Content    string `orm:"column(content);null"`
-	CreateTime int    `orm:"column(create_time);null"`
+	Id         int    `json:"id";orm:"column(id);auto"`
+	Title      string `json:"title";orm:"column(title);size(150);null"`
+	Content    string `json:"content";orm:"column(content);null"`
+	CreateTime int    `json:"createTime";orm:"column(create_time);null"`
+	Role       int64  `json:"role";orm:"column(role);null"`
 }
 
 func (t *Artical) TableName() string {
@@ -59,6 +59,7 @@ func GetAllArtical(query map[string]string, fields []string, sortby []string, or
 			qs = qs.Filter(k, v)
 		}
 	}
+
 	// order by:
 	var sortFields []string
 	if len(sortby) != 0 {
