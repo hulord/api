@@ -4,15 +4,13 @@ import (
 	"api/models"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
-	"github.com/astaxie/beego"
 )
 
 // ArticalController operations for Artical
 type ArticalController struct {
-	beego.Controller
+	BaseController
 }
 
 // URLMapping ...
@@ -116,10 +114,10 @@ func (c *ArticalController) GetAll() {
 			k, v := kv[0], kv[1]
 			query[k] = v
 		}
-		//新增查询权限操作
-		if c.Role {
-			fmt.Println(c.Role)
-		}
+	}
+	//新增查询权限操作
+	if c.Role != 0{
+		query["role"] = strconv.Itoa(c.Role)
 	}
 
 	l, err := models.GetAllArtical(query, fields, sortby, order,offset, limit)
