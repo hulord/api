@@ -114,7 +114,7 @@ func init() {
 	beego.GlobalControllerRouter["api/controllers:UserController"] = append(beego.GlobalControllerRouter["api/controllers:UserController"],
 		beego.ControllerComments{
 			Method: "Login",
-			Router: `/Login`,
+			Router: `/login`,
 			AllowHTTPMethods: []string{"post"},
 			MethodParams: param.Make(),
 			Params: nil})
