@@ -3,8 +3,6 @@ package controllers
 import (
 	"api/models"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -89,11 +87,11 @@ func (c *ArticalController) GetAll() {
 		fields = strings.Split(v, ",")
 	}
 	// limit: 10 (default is 10)
-	if v, err := c.GetInt64("limit"); err == nil {
+	if v, err := c.GetInt64("pageSize"); err == nil {
 		limit = v
 	}
 	// offset: 0 (default is 0)
-	if v, err := c.GetInt64("offset"); err == nil {
+	if v, err := c.GetInt64("page"); err == nil {
 		offset = v
 	}
 	// sortby: col1,col2
@@ -105,26 +103,30 @@ func (c *ArticalController) GetAll() {
 		order = strings.Split(v, ",")
 	}
 	// query: k:v,k:v
-	if v := c.GetString("query"); v != "" {
-		for _, cond := range strings.Split(v, ",") {
-			kv := strings.SplitN(cond, ":", 2)
-			if len(kv) != 2 {
-				c.Data["json"] = errors.New("Error: invalid query key/value pair")
-				c.ServeJSON()
-				return
-			}
-			k, v := kv[0], kv[1]
-			query[k] = v
-		}
+	 if v := c.GetString("keyword"); v != "" {
+		 query["title.contains"] = v
+	// 	for _, cond := range strings.Split(v, ",") {
+	// 		kv := strings.SplitN(cond, ":", 2)
+	// 		if len(kv) != 2 {
+	// 			c.ApiJsonReturn(0,"","Error: invalid query key/value pair")	
+	// 		}
+	// 		k, v := kv[0], kv[1]
+	// 		query[k] = v
+	// 	}
+	}
+	
+	//新增查询权限操作
+	if c.Role != 0{
+		query["role"] = strconv.Itoa(c.Role)
 	}
 
 	l, err := models.GetAllArtical(query, fields, sortby, order,offset, limit)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		c.ApiJsonReturn(0,err.Error(),"")	
 	} else {
-		c.Data["json"] = l
+		c.ApiJsonReturn(1,"",l)	
 	}
-	c.ServeJSON()
+
 }
 
 // Put ...

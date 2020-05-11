@@ -7,6 +7,12 @@ import (
 	"strings"
 	"github.com/astaxie/beego/orm"
 )
+type ArticalList struct{
+	PageSize int64 `json:"pagesize"`
+	Page int64 `json:"page"`
+	Total int64 `json:"total"`
+	List []interface{} `json:"list"`
+}
 
 type Artical struct {
 	Id         int    `json:"id";orm:"column(id);auto"`
@@ -46,7 +52,8 @@ func GetArticalById(id int) (v *Artical, err error) {
 // GetAllArtical retrieves all Artical matches certain condition. Returns empty list if
 // no records exist
 func GetAllArtical(query map[string]string, fields []string, sortby []string, order []string,
-	offset int64, limit int64) (ml []interface{}, err error) {
+	offset int64, limit int64) (a ArticalList, err error) {
+	var articalList ArticalList
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Artical))
 	// query k=v
@@ -72,7 +79,7 @@ func GetAllArtical(query map[string]string, fields []string, sortby []string, or
 				} else if order[i] == "asc" {
 					orderby = v
 				} else {
-					return nil, errors.New("Error: Invalid order. Must be either [asc|desc]")
+					return articalList, errors.New("Error: Invalid order. Must be either [asc|desc]")
 				}
 				sortFields = append(sortFields, orderby)
 			}
@@ -86,21 +93,32 @@ func GetAllArtical(query map[string]string, fields []string, sortby []string, or
 				} else if order[0] == "asc" {
 					orderby = v
 				} else {
-					return nil, errors.New("Error: Invalid order. Must be either [asc|desc]")
+					return articalList, errors.New("Error: Invalid order. Must be either [asc|desc]")
 				}
 				sortFields = append(sortFields, orderby)
 			}
 		} else if len(sortby) != len(order) && len(order) != 1 {
-			return nil, errors.New("Error: 'sortby', 'order' sizes mismatch or 'order' size is not 1")
+			return articalList, errors.New("Error: 'sortby', 'order' sizes mismatch or 'order' size is not 1")
 		}
 	} else {
 		if len(order) != 0 {
-			return nil, errors.New("Error: unused 'order' fields")
+			return articalList, errors.New("Error: unused 'order' fields")
 		}
 	}
 
 	var l []Artical
 	qs = qs.OrderBy(sortFields...)
+	var ml []interface{}
+	
+	if count,err := qs.Count(); err == nil {
+		articalList.Total = count
+	} else {
+		articalList.Total = 0
+	}
+	articalList.Page = offset
+	articalList.PageSize = limit
+
+	offset =  (offset-1)*limit
 	if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
 		if len(fields) == 0 {
 			for _, v := range l {
@@ -117,9 +135,10 @@ func GetAllArtical(query map[string]string, fields []string, sortby []string, or
 				ml = append(ml, m)
 			}
 		}
-		return ml, nil
+		articalList.List = ml
+		return articalList, nil
 	}
-	return nil, err
+	return articalList, err
 }
 
 // UpdateArtical updates Artical by Id and returns error if

@@ -32,13 +32,15 @@ type JsonReturn struct {
 func (b *BaseController) Prepare() {
     //验证用户是否登录
 	b.isLogin = false
-	var LimitUri = []string{"/v1/artical/getall","/v1/artical/test1"}
+	var LimitUri = []string{"/v1/artical/getall","/v1/user/login"}
 	var isFlag  = false
-	if utils.IsContain(LimitUri,b.Ctx.Request.RequestURI){
+	uri := strings.Split(b.Ctx.Request.RequestURI, "?")
+
+	if utils.IsContain(LimitUri,uri[0]){
 		 isFlag = true
 	}
 
-	if b.Ctx.Input.Header("Authorization") == "" {
+	if  b.Ctx.Input.Header("Authorization") == "" {
 		//允许游客查看的路由
 		if isFlag {
 			b.Role = 3

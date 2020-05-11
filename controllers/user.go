@@ -16,7 +16,7 @@ type UserController struct {
 // @Param	username	password 	string	true	
 // @Success 200 {object} models.User
 // @Failure 403 username or password is wrong
-// @router /Login [post]
+// @router /login [post]
 func (u *UserController) Login(){
 	var login_user models.User
 	data := u.Ctx.Input.RequestBody
