@@ -16,7 +16,6 @@ type ArticalController struct {
 func (c *ArticalController) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
-	c.Mapping("test1", c.Test1)
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
@@ -122,9 +121,9 @@ func (c *ArticalController) GetAll() {
 
 	l, err := models.GetAllArtical(query, fields, sortby, order,offset, limit)
 	if err != nil {
-		c.ApiJsonReturn(0,err.Error(),"")	
+		c.ApiJsonReturn(1,err.Error(),"")	
 	} else {
-		c.ApiJsonReturn(1,"",l)	
+		c.ApiJsonReturn(0,"",l)	
 	}
 
 }
