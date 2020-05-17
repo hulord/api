@@ -7,7 +7,7 @@ import (
 	"strings"
 	"fmt"
 	"api/models"
-	"time" 
+	"time" 	
 )
 
 type BaseController struct {
@@ -32,11 +32,9 @@ type JsonReturn struct {
 func (b *BaseController) Prepare() {
     //验证用户是否登录
 	b.isLogin = false
-	var LimitUri = []string{"/v1/artical/getall","/v1/user/login"}
+	var LimitUri = []string{"/v1/artical/getall","/v1/artical/([1-9]+)","/v1/user/login"}
 	var isFlag  = false
-	uri := strings.Split(b.Ctx.Request.RequestURI, "?")
-
-	if utils.IsContain(LimitUri,uri[0]){
+	if utils.IsContain(LimitUri,b.Ctx.Request.RequestURI){
 		 isFlag = true
 	}
 
@@ -131,12 +129,14 @@ func ParseToken(tokenss string)(j jwt.MapClaims,err error){
 }
 
 //元素是否中数组中
-func IsContain(items []string, item string) bool {
-	for _, eachItem := range items {
-		if eachItem == item {
-			return true
-		}
-	}
-	return false
-}
+// func IsContain(items []string, item string)  {
+// 	fmt.Println("abc")
+// 	for _, eachItem := range items {
+// 		compile := regexp.MustCompile(eachItem)
+// 		submatch := compile.FindAllSubmatch(item, -1)
+// 		fmt.Println(submatch)
+
+// 	}
+// 	return false
+// }
 

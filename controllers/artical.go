@@ -55,11 +55,10 @@ func (c *ArticalController) GetOne() {
 	id, _ := strconv.Atoi(idStr)
 	v, err := models.GetArticalById(id)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		c.ApiJsonReturn(1,err.Error(),"")	
 	} else {
-		c.Data["json"] = v
+		c.ApiJsonReturn(0,"",v)	
 	}
-	c.ServeJSON()
 }
 
 // GetAll ...
