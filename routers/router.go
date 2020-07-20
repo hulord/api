@@ -29,6 +29,12 @@ func init() {
 				&controllers.UserController{},
 			),
 		),
+		beego.NSNamespace("/menu",
+			beego.NSInclude(
+				&controllers.MenuController{},
+			),
+		),
+
 	)
 	beego.AddNamespace(ns)
 }

@@ -7,13 +7,13 @@ import (
 	"strings"
 	"fmt"
 	"api/models"
-	"time" 	
+	"time" 
 )
 
 type BaseController struct {
 	beego.Controller
 	isLogin bool     	//验证是否登录
-	Role int
+	role int
 	Username string
 }
 
@@ -32,7 +32,7 @@ type JsonReturn struct {
 func (b *BaseController) Prepare() {
     //验证用户是否登录
 	b.isLogin = false
-	var LimitUri = []string{"/v1/artical/getall","/v1/artical/([1-9]+)","/v1/user/login"}
+	var LimitUri = []string{"/v1/artical/getall","/v1/artical/([1-9]+)","/v1/artical/test/([1-9]+)","/v1/user/login","/v1/menu"}
 	var isFlag  = false
 	if utils.IsContain(LimitUri,b.Ctx.Request.RequestURI){
 		 isFlag = true
@@ -41,7 +41,7 @@ func (b *BaseController) Prepare() {
 	if  b.Ctx.Input.Header("Authorization") == "" {
 		//允许游客查看的路由
 		if isFlag {
-			b.Role = 3
+			b.role = 3
 			b.Username = "游客"  //Token为空是游客登录
 		//禁止路由
 		}else{
@@ -49,22 +49,21 @@ func (b *BaseController) Prepare() {
 			 b.ApiJsonReturn(1, "no permission","")
 		}
 	} 
-	if !isFlag && b.Ctx.Input.Header("Authorization") != "" {
+	if  b.Ctx.Input.Header("Authorization") != "" {
 		authString := b.Ctx.Input.Header("Authorization")
-		beego.Debug("AuthString:", authString)
-		kv := strings.Split(authString, " ")
+		//beego.Debug("AuthString:", authString)
+		kv := strings.Split(authString, ":")
 		if len(kv) != 2 || kv[0] != "Bearer" {
 			beego.Error("AuthString invalid:", authString)
 			b.ApiJsonReturn(1, "AuthString invalid","")
 		}
 		// //检验Token是否成功
 		claims,err := ParseToken(kv[1])
-		
 		if err!=nil {
 			b.ApiJsonReturn(1, "AuthString invalid","")
 		}
 		b.isLogin = true
-		b.Role = claims["role"].(int)
+		b.role = claims["role"].(int)
 		b.Username = claims["username"].(string)
 	}
 }
@@ -90,7 +89,7 @@ func CreateToken(user models.User,expiredSeconds int)(tokenss string,err error){
 	//自定义claim
 	claim := jwt.MapClaims{
 		"username": user.Username,
-		"Role":user.Role,
+		"role":user.Role,
 		"nbf":  time.Now().Unix(),
 		"iat":  time.Now().Unix(),
 		"exp":  expireAt,

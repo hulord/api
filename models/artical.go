@@ -14,12 +14,24 @@ type ArticalList struct{
 	List []interface{} `json:"list"`
 }
 
+type Tag struct {
+	Id int `json:"id"`
+	TagName string `json:"tag_name"`
+}
+
+type MapArticalTag struct {
+	Id int `json:"id"`
+	ArticalId int `json:"artical_id"`
+	TagId int `json:"tag_id"`
+}
+	
 type Artical struct {
-	Id         int    `json:"id";orm:"column(id);auto"`
-	Title      string `json:"title";orm:"column(title);size(150);null"`
-	Content    string `json:"content";orm:"column(content);null"`
-	CreateTime int    `json:"createTime";orm:"column(create_time);null"`
-	Role       int64  `json:"role";orm:"column(role);null"`
+	Id         int    `json:"id"`
+	Title      string `json:"title"`
+	Content    string `json:"content"`
+	CreateTime int    `json:"createTime"`
+	Role       int64  `json:"role"`
+	Tags       []*Tag `orm:"rel(m2m)"`
 }
 
 func (t *Artical) TableName() string {
@@ -27,7 +39,7 @@ func (t *Artical) TableName() string {
 }
 
 func init() {
-	orm.RegisterModel(new(Artical))
+	orm.RegisterModel(new(Artical),new(Tag))
 }
 
 // AddArtical insert a new Artical into database and returns
@@ -48,6 +60,33 @@ func GetArticalById(id int) (v *Artical, err error) {
 	}
 	return nil, err
 }
+
+// GetArticalById retrieves Artical by Id. Returns error if
+// Id doesn't exist
+func GetArticalTagsById(id int) (v Artical,err error) {
+	orm.Debug = true
+	o := orm.NewOrm()
+	artical := Artical{Id: id}
+
+	if err := o.Read(&artical); err == nil {
+		o.LoadRelated(&artical, "Tags")
+	}
+	return artical,nil		
+}
+
+
+// GetArticalById retrieves Artical by Id. Returns error if
+// Id doesn't exist
+func GetArticalTags2ById(id int) (v Artical,err error) {
+	orm.Debug = true
+	o := orm.NewOrm()
+	artical := Artical{Id: id}
+	if err := o.Read(&artical); err == nil {
+		o.LoadRelated(&artical, "Tags")
+	}
+	return artical,nil		
+}
+
 
 // GetAllArtical retrieves all Artical matches certain condition. Returns empty list if
 // no records exist

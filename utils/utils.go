@@ -2,7 +2,6 @@ package utils
 
 import (
 	"regexp"
-	"fmt"
 )
 
 func main(){
@@ -13,7 +12,6 @@ func main(){
 func IsContain(items []string, item string) bool {
 	for _, eachItem := range items {
 		match,_:=regexp.MatchString(eachItem,item)
-		fmt.Println(match)
 		if match {
 			return true
 		}

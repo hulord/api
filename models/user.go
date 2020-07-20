@@ -11,13 +11,13 @@ func init() {
 
 type User struct {
 	Id       int 		`json:"id"`
-	Username string		`json:"userName"`
-	Password string		`json:"Password"`
-	Gender   string		`json:"Gender"`
-	Age      string		`json:"Age"`
-	Address  string		`json:"Address"`
-	Email    string		`json:"Email"`
-	Role     int        `json:"Role"`
+	Username string		`json:"username"`
+	Password string		`json:"password"`
+	Gender   string		`json:"gender"`
+	Age      string		`json:"age"`
+	Address  string		`json:"address"`
+	Email    string		`json:"email"`
+	Role     int        `json:"role"`
 }
 
 func GetUserById(id int) (u User, err error) {

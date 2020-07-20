@@ -70,6 +70,24 @@ func init() {
             Filters: nil,
             Params: nil})
 
+    beego.GlobalControllerRouter["api/controllers:ArticalController"] = append(beego.GlobalControllerRouter["api/controllers:ArticalController"],
+        beego.ControllerComments{
+            Method: "Test",
+            Router: `/test/:id`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["api/controllers:MenuController"] = append(beego.GlobalControllerRouter["api/controllers:MenuController"],
+        beego.ControllerComments{
+            Method: "GetAll",
+            Router: `/`,
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["api/controllers:ObjectController"] = append(beego.GlobalControllerRouter["api/controllers:ObjectController"],
         beego.ControllerComments{
             Method: "Post",

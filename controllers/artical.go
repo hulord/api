@@ -53,13 +53,14 @@ func (c *ArticalController) Post() {
 func (c *ArticalController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	v, err := models.GetArticalById(id)
+	v, err := models.GetArticalTagsById(id)
 	if err != nil {
 		c.ApiJsonReturn(1,err.Error(),"")	
 	} else {
 		c.ApiJsonReturn(0,"",v)	
 	}
 }
+
 
 // GetAll ...
 // @Title Get All
@@ -114,8 +115,8 @@ func (c *ArticalController) GetAll() {
 	}
 	
 	//新增查询权限操作
-	if c.Role != 0{
-		query["role"] = strconv.Itoa(c.Role)
+	if c.role != 0{
+		query["role"] = strconv.Itoa(c.role)
 	}
 
 	l, err := models.GetAllArtical(query, fields, sortby, order,offset, limit)
@@ -167,4 +168,22 @@ func (c *ArticalController) Delete() {
 		c.Data["json"] = err.Error()
 	}
 	c.ServeJSON()
+}
+
+// Test ...
+// @Title Delete
+// @Description delete the Artical
+// @Param	id		path 	string	true		"The id you want to delete"
+// @Success 200 {string} delete success!
+// @Failure 403 id is empty
+// @router /test/:id [get]
+func (c *ArticalController) Test() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.Atoi(idStr)
+	l, err := models.GetArticalTags2ById(id)
+	if err != nil {
+		c.ApiJsonReturn(1,err.Error(),"")	
+	} else {
+		c.ApiJsonReturn(0,"",l)	
+	}
 }
