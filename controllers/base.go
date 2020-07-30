@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"api/models"
 	"time" 
+	"errors"
 )
 
 type BaseController struct {
@@ -32,13 +33,15 @@ type JsonReturn struct {
 func (b *BaseController) Prepare() {
     //验证用户是否登录
 	b.isLogin = false
-	var LimitUri = []string{"/v1/artical/getall","/v1/artical/([1-9]+)","/v1/artical/test/([1-9]+)","/v1/user/login","/v1/menu"}
+	var LimitUri = []string{"/v1/artical/getall","/v1/artical/([1-9]+)","/v1/artical/test/([1-9]+)","/v1/user/login","/v1/menu","/artical/Test1"}
 	var isFlag  = false
 	if utils.IsContain(LimitUri,b.Ctx.Request.RequestURI){
 		 isFlag = true
 	}
 
-	if  b.Ctx.Input.Header("Authorization") == "" {
+	authorizationHeader := b.Ctx.Input.Header("Authorization")
+	authString,err := GetAccessToken(authorizationHeader)
+	if  err != nil {
 		//允许游客查看的路由
 		if isFlag {
 			b.role = 3
@@ -48,22 +51,14 @@ func (b *BaseController) Prepare() {
 			 beego.Error("without token, unauthorized !!")
 			 b.ApiJsonReturn(1, "no permission","")
 		}
-	} 
-	if  b.Ctx.Input.Header("Authorization") != "" {
-		authString := b.Ctx.Input.Header("Authorization")
-		//beego.Debug("AuthString:", authString)
-		kv := strings.Split(authString, ":")
-		if len(kv) != 2 || kv[0] != "Bearer" {
-			beego.Error("AuthString invalid:", authString)
-			b.ApiJsonReturn(1, "AuthString invalid","")
-		}
+	} else {
 		// //检验Token是否成功
-		claims,err := ParseToken(kv[1])
+		claims,err := ParseToken(authString)
 		if err!=nil {
 			b.ApiJsonReturn(1, "AuthString invalid","")
 		}
 		b.isLogin = true
-		b.role = claims["role"].(int)
+		b.role = int(claims["role"].(float64))
 		b.Username = claims["username"].(string)
 	}
 }
@@ -89,7 +84,7 @@ func CreateToken(user models.User,expiredSeconds int)(tokenss string,err error){
 	//自定义claim
 	claim := jwt.MapClaims{
 		"username": user.Username,
-		"role":user.Role,
+		"role": user.Role,
 		"nbf":  time.Now().Unix(),
 		"iat":  time.Now().Unix(),
 		"exp":  expireAt,
@@ -127,6 +122,17 @@ func ParseToken(tokenss string)(j jwt.MapClaims,err error){
     return claim,nil
 }
 
+func GetAccessToken(authString string)(accessToken string,err error){
+	if authString == "" {
+		return  "",errors.New("AuthString IS NULL")
+	}
+	kv := strings.Split(authString, ":")
+	if len(kv) > 2 || kv[0] != "Bearer" {
+		beego.Error("AuthString invalid:", authString)
+		return  "",errors.New("AuthString invalid,1")
+	}
+	return kv[1],nil
+}
 //元素是否中数组中
 // func IsContain(items []string, item string)  {
 // 	fmt.Println("abc")

@@ -18,12 +18,6 @@ type Tag struct {
 	Id int `json:"id"`
 	TagName string `json:"tag_name"`
 }
-
-type MapArticalTag struct {
-	Id int `json:"id"`
-	ArticalId int `json:"artical_id"`
-	TagId int `json:"tag_id"`
-}
 	
 type Artical struct {
 	Id         int    `json:"id"`

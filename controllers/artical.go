@@ -19,6 +19,7 @@ func (c *ArticalController) URLMapping() {
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
+	c.Mapping("Test1",c.Test1)
 }
 
 // Post ...
@@ -186,4 +187,15 @@ func (c *ArticalController) Test() {
 	} else {
 		c.ApiJsonReturn(0,"",l)	
 	}
+}
+
+// Test ...
+// @Title Delete
+// @Description delete the Artical
+// @Param	id		path 	string	true		"The id you want to delete"
+// @Success 200 {string} delete success!
+// @Failure 403 id is empty
+// @router /Test1 [Post]
+func (c *ArticalController) Test1() {
+	c.ApiJsonReturn(0,"",1)	
 }
