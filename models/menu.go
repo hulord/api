@@ -2,7 +2,9 @@ package models
 
 import (
 	"github.com/astaxie/beego/orm"
-
+	"fmt"
+	// "reflect"
+	//"encoding/json"
 )
 
 var (
@@ -35,11 +37,24 @@ func init(){
 
 }
 
-func GetMenuByRole(role int) (m []*RoleMenus,err error) {
+func GetMenuByRole(role int) (m []map[string]interface{},err error) {
 	orm.Debug = true
 	o := orm.NewOrm()
 	var arm []*RoleMenus
-	o.QueryTable("role_menus").Filter("role_id__eq", 1).RelatedSel().All(&arm)
-	return arm,nil
+	o.QueryTable("role_menus").Filter("role_id__eq", role).RelatedSel().All(&arm)
+	menuList := []map[string]interface{}{}
+	for _, value := range arm {
+		Menu2 := map[string]interface{}{
+			"Id":value.Menu.Id,
+			"Name":value.Menu.Name,
+			"Icon":value.Menu.Icon,
+			"ParentId":value.Menu.ParentId,
+			"Path":value.Menu.Path,
+			"CreateTime":value.Menu.CreateTime,
+		}
+		menuList = append(menuList,Menu2)
+	}
+	fmt.Println(menuList)
+	return menuList,nil
 }
 

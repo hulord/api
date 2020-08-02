@@ -1,14 +1,15 @@
 package controllers
 
 import (
-	// "fmt"
+	//"fmt"
 	// "encoding/json"
 	"api/models"
-
+	utils "api/utils"
+	//"reflect"
 )
 
 // MenuController operations for Menu
-type MenuController struct {
+type MenuController struct {	
 	BaseController
 }
 type Menus struct {
@@ -45,10 +46,16 @@ func (c *MenuController) GetAll() {
 	// var menus Menus
 	// err := json.Unmarshal([]byte(jsonStr), &menus)
 	// fmt.Println(menus,err)
-	if m, err := models.GetMenuByRole(c.role); err != nil {
+	m, err := models.GetMenuByRole(c.role)
+	//jsons,_ := json.Marshal(m)
+	if  err != nil {
 		c.ApiJsonReturn(1,err.Error(),"")	
-	} else {
-		c.ApiJsonReturn(0,"",m)	
+	} else {		
+		// for _, var_val := range m {
+		// 	fmt.Println(var_val.Menu.ParentId)
+		// }
+		menu := utils.Tree(m,1)
+		c.ApiJsonReturn(0,"",menu)	
 	}
 	c.ApiJsonReturn(0,"fsda","1")	
 }
