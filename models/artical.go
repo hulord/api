@@ -8,10 +8,10 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 type ArticalList struct{
-	PageSize int64 `json:"pagesize"`
-	Page int64 `json:"page"`
-	Total int64 `json:"total"`
-	List []interface{} `json:"list"`
+	ShowCount int64 `json:"showCount"`
+	CurrentPage int64 `json:"currentPage"`
+	TotalResult int64 `json:"totalResult"`
+	DataList []interface{} `json:"dataList"`
 }
 
 type Tag struct {
@@ -22,6 +22,8 @@ type Tag struct {
 type Artical struct {
 	Id         int    `json:"id"`
 	Title      string `json:"title"`
+	Author	   string `json:"author"`
+	View	   string `json:"view"`
 	Content    string `json:"content"`
 	CreateTime int    `json:"createTime"`
 	Role       int64  `json:"role"`
@@ -144,12 +146,12 @@ func GetAllArtical(query map[string]string, fields []string, sortby []string, or
 	var ml []interface{}
 	
 	if count,err := qs.Count(); err == nil {
-		articalList.Total = count
+		articalList.TotalResult = count
 	} else {
-		articalList.Total = 0
+		articalList.TotalResult = 0
 	}
-	articalList.Page = offset
-	articalList.PageSize = limit
+	articalList.CurrentPage = offset
+	articalList.ShowCount = limit
 
 	offset =  (offset-1)*limit
 	if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
@@ -168,7 +170,7 @@ func GetAllArtical(query map[string]string, fields []string, sortby []string, or
 				ml = append(ml, m)
 			}
 		}
-		articalList.List = ml
+		articalList.DataList = ml
 		return articalList, nil
 	}
 	return articalList, err
