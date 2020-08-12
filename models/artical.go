@@ -29,7 +29,7 @@ type Artical struct {
 }
 
 func (t *Artical) TableName() string {
-	return "artical"
+	return "db__artical"
 }
 
 func init() {
