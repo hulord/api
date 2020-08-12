@@ -87,11 +87,11 @@ func (c *ArticalController) GetAll() {
 		fields = strings.Split(v, ",")
 	}
 	// limit: 10 (default is 10)
-	if v, err := c.GetInt64("pageSize"); err == nil {
+	if v, err := c.GetInt64("showCount"); err == nil {
 		limit = v
 	}
 	// offset: 0 (default is 0)
-	if v, err := c.GetInt64("page"); err == nil {
+	if v, err := c.GetInt64("currentPage"); err == nil {
 		offset = v
 	}
 	// sortby: col1,col2
@@ -124,7 +124,7 @@ func (c *ArticalController) GetAll() {
 	if err != nil {
 		c.ApiJsonReturn(1,err.Error(),"")	
 	} else {
-		c.ApiJsonReturn(0,"",l)	
+		c.ApiJsonReturn(0,"成功",l)	
 	}
 
 }
