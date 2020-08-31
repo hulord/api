@@ -20,6 +20,8 @@ func (c *ArticalController) URLMapping() {
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
 	c.Mapping("Test1",c.Test1)
+	c.Mapping("Add",c.Add)
+	c.Mapping("GetTags",c.GetTags)
 }
 
 // Post ...
@@ -43,6 +45,19 @@ func (c *ArticalController) Post() {
 	}
 	c.ServeJSON()
 }
+// tags ...
+// @Title GetTags
+// @Description get Tags
+// @Success 200 {object} models.Tag
+// @Failure 403 :id is empty
+// @router /tags [get]
+func (c *ArticalController) GetTags(){
+	if t, err :=models.GetTags(); err == nil {
+		c.ApiJsonReturn(0,"",t)	
+	} else {
+		c.ApiJsonReturn(1,err.Error(),"")	
+	}
+}
 
 // GetOne ...
 // @Title Get One
@@ -62,6 +77,26 @@ func (c *ArticalController) GetOne() {
 	}
 }
 
+// Add ...
+// @Title Add
+// @Description Add Artical by data
+// @Success 200 {object} models.Artical
+// @Failure 403 :id is empty
+// @router /add [Post]
+func (c *ArticalController) Add(){
+	var v models.Artical
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
+		if _, err := models.AddArtical(&v); err == nil {
+			c.Ctx.Output.SetStatus(201)
+			c.Data["json"] = v
+		} else {
+			c.Data["json"] = err.Error()
+		}
+	} else {
+		c.Data["json"] = err.Error()
+	}
+	c.ServeJSON()
+}
 
 // GetAll ...
 // @Title Get All

@@ -38,12 +38,26 @@ func init() {
 	orm.RegisterModel(new(Artical),new(Tag))
 }
 
+func getTags1() (t []Tag,err error) {
+	o := orm.NewOrm()
+	var tags []Tag
+	if _,err = o.QueryTable(new(Tag)).All(&tags);err == nil {
+		return tags,err
+	}
+	return
+}
+
 // AddArtical insert a new Artical into database and returns
 // last inserted Id on success.
 func AddArtical(m *Artical) (id int64, err error) {
+	// artical := Artical{Title:m.title}
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
-	return
+	if id, err = o.Insert(m);err == nil {
+		for k, v := range m.Tags {
+			fmt.Println(k,v);
+		}
+	}
+	return id,err
 }
 
 // GetArticalById retrieves Artical by Id. Returns error if
@@ -205,3 +219,8 @@ func DeleteArtical(id int) (err error) {
 	}
 	return
 }
+
+
+
+
+
