@@ -31,7 +31,7 @@ type JsonReturn struct {
 }
 
 func (b *BaseController) Prepare() {
-    //验证用户是否登录
+    //验证用户是否需要登录
 	b.isLogin = false
 	var LimitUri = []string{"/v1/artical/getall","/v1/artical/([1-9]+)","/v1/artical/test/([1-9]+)","/v1/user/login","/v1/menu","/artical/Test1"}
 	var isFlag  = false

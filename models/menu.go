@@ -33,7 +33,7 @@ type Menu struct {
 }
 
 func init(){
-	orm.RegisterModel(new(Menu),new(Role),new(RoleMenus))
+	orm.RegisterModelWithPrefix("u_db_",new(Menu),new(Role),new(RoleMenus))
 
 }
 

@@ -8,7 +8,7 @@ import (
 	//"reflect"
 )
 
-// MenuController operations for Menu
+// Operations about Menu
 type MenuController struct {	
 	BaseController
 }
@@ -59,4 +59,5 @@ func (c *MenuController) GetAll() {
 	}
 	c.ApiJsonReturn(0,"fsda","1")	
 }
+
 

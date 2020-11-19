@@ -30,21 +30,17 @@ type Artical struct {
 	Tags       []*Tag `orm:"rel(m2m)"`
 }
 
-func (t *Artical) TableName() string {
-	return "db__artical"
-}
-
 func init() {
-	orm.RegisterModel(new(Artical),new(Tag))
+	orm.RegisterModelWithPrefix("u_db_",new(Artical),new(Tag))
 }
 
-func getTags1() (t []Tag,err error) {
+func GetTags() (t []Tag,err error) {
 	o := orm.NewOrm()
 	var tags []Tag
 	if _,err = o.QueryTable(new(Tag)).All(&tags);err == nil {
 		return tags,err
 	}
-	return
+	return nil,nil;
 }
 
 // AddArtical insert a new Artical into database and returns

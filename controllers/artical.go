@@ -52,7 +52,7 @@ func (c *ArticalController) Post() {
 // @Failure 403 :id is empty
 // @router /tags [get]
 func (c *ArticalController) GetTags(){
-	if t, err :=models.GetTags(); err == nil {
+	if t, err := models.GetTags(); err == nil {
 		c.ApiJsonReturn(0,"",t)	
 	} else {
 		c.ApiJsonReturn(1,err.Error(),"")	

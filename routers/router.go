@@ -34,7 +34,11 @@ func init() {
 				&controllers.MenuController{},
 			),
 		),
-
+		beego.NSNamespace("/error",
+			beego.NSInclude(
+				&controllers.ErrorController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

@@ -62,6 +62,6 @@ func (u *UserController) Get() {
 	u.ServeJSON()
 }
 
-
+	
 
 
