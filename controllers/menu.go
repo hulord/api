@@ -4,7 +4,8 @@ import (
 	//"fmt"
 	// "encoding/json"
 	"api/models"
-	utils "api/utils"
+	"api/utils"
+
 	//"reflect"
 )
 
@@ -55,7 +56,7 @@ func (c *MenuController) GetAll() {
 		// 	fmt.Println(var_val.Menu.ParentId)
 		// }
 		menu := utils.Tree(m,1)
-		c.ApiJsonReturn(0,"",menu)	
+		c.ApiJsonReturn(0,"",menu)
 	}
 	c.ApiJsonReturn(0,"fsda","1")	
 }

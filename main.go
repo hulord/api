@@ -11,7 +11,7 @@ import (
 
 func init() {
 	//注册 model
-	orm.RegisterModelWithPrefix("h_db_",new(models.User))
+	orm.RegisterModelWithPrefix("u_db_",new(models.User))
 	//注册驱动
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	//注册默认数据库

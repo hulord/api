@@ -1,3 +1,4 @@
 /*.exe
 /api.exe
 /api.exe~
+/routers/commentsRouter_controllers.go

@@ -41,7 +41,7 @@ func GetMenuByRole(role int) (m []map[string]interface{},err error) {
 	orm.Debug = true
 	o := orm.NewOrm()
 	var arm []*RoleMenus
-	o.QueryTable("role_menus").Filter("role_id__eq", role).RelatedSel().All(&arm)
+	o.QueryTable("u_db_role_menus").Filter("role_id__eq", role).RelatedSel().All(&arm)
 	menuList := []map[string]interface{}{}
 	for _, value := range arm {
 		Menu2 := map[string]interface{}{

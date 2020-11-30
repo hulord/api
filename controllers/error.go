@@ -2,7 +2,6 @@ package controllers
  
 
 import (
-	"github.com/astaxie/beego"
 )
 
 // ErrorController operations for Error
@@ -15,5 +14,5 @@ func (c *ErrorController) Error404() {
 }
 func (c *ErrorController) Error500() {
 	c.Abort("500")
-	c.ApiJsonReturn(500,beego.Error("错误"),"")	
+	c.ApiJsonReturn(500,"未知错误","")
 }

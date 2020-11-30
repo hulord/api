@@ -34,6 +34,8 @@ func (u *UserController) Login(){
 		if user.Password == login_user.Password {
 			token,_ := CreateToken(user,6000)
 			u.ApiJsonReturn(0, "登录成功",token)
+		}else{
+			u.ApiJsonReturn(1, "无效的用户名和密码","")
 		}
 	}else{	
 		u.ApiJsonReturn(1, "无效的用户名和密码","")	
