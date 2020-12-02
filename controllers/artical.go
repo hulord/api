@@ -2,7 +2,11 @@ package controllers
 
 import (
 	"api/models"
+	"api/utils"
+
+	//utils "api/utils"
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -30,7 +34,7 @@ func (c *ArticalController) URLMapping() {
 // @Param	body		body 	models.Artical	true		"body for Artical content"
 // @Success 201 {int} models.Artical
 // @Failure 403 body is empty
-// @router / [post]
+// @router /1123 [post]
 func (c *ArticalController) Post() {
 	var v models.Artical
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
@@ -84,13 +88,18 @@ func (c *ArticalController) GetOne() {
 // @Failure 403 :id is empty
 // @router /add [Post]
 func (c *ArticalController) Add(){
-	var v models.Artical
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		if _, err := models.AddArtical(&v); err == nil {
-			c.Ctx.Output.SetStatus(201)
-			c.Data["json"] = v
-		} else {
-			c.Data["json"] = err.Error()
+	var artical map[string]string
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &artical); err == nil {
+		//验证字符是否为空
+		if err := utils.IsEmpty(artical,[]string{"title","name","view"});err != nil {
+			c.Data["json"] = err
+		}else{
+			if _, err := models.AddArtical(&v); err == nil {
+				c.Ctx.Output.SetStatus(201)
+				c.Data["json"] = v
+			} else {
+				c.Data["json"] = err.Error()
+			}
 		}
 	} else {
 		c.Data["json"] = err.Error()

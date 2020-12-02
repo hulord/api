@@ -46,11 +46,11 @@ func GetTags() (t []Tag,err error) {
 // AddArtical insert a new Artical into database and returns
 // last inserted Id on success.
 func AddArtical(m *Artical) (id int64, err error) {
-	// artical := Artical{Title:m.title}
+	inserter, _ := orm.NewOrm().QueryTable(new(Tag)).PrepareInsert()
 	o := orm.NewOrm()
 	if id, err = o.Insert(m);err == nil {
-		for k, v := range m.Tags {
-			fmt.Println(k,v);
+		for _, v := range m.Tags {
+			inserter.Insert(&v)
 		}
 	}
 	return id,err

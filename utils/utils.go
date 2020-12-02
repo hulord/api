@@ -1,14 +1,17 @@
 package utils
 
 import (
+	"errors"
 	"regexp"
 	// "fmt"
 	//"api/models"
-
 )
 
 func main(){
 	
+}
+type checkParam struct {
+
 }
 
 type TreeList struct {
@@ -32,7 +35,21 @@ func IsContain(items []string, item string) bool {
 	return false
 }
 
-//tree
+//切片中是否存在空值并返回
+func IsEmpty(params map[string]string,limitMaps []string) (err error) {
+	 if len(params) != 0 {
+		 for _,val := range limitMaps{
+		 	if params[val]  == "" {
+				return errors.New(val+"不能为空")
+			}
+		 }
+		 return nil
+	 }else{
+		 return errors.New("数据包不能为空")
+	 }
+}
+
+//数组扁平化
 func Tree(treeMap []map[string]interface{},pid int)[]TreeList{
 	branch := make([]TreeList, 0)
 	 for j := 0; j < len(treeMap); j++ {
