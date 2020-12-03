@@ -14,24 +14,19 @@ type ArticalList struct{
 	DataList []interface{} `json:"dataList"`
 }
 
-type Tag struct {
-	Id int `json:"id"`
-	TagName string `json:"tag_name"`
-}
-	
 type Artical struct {
 	Id         int    `json:"id"`
 	Title      string `json:"title"`
 	Author	   string `json:"author"`
 	View	   string `json:"view"`
 	Content    string `json:"content"`
-	CreateTime int    `json:"createTime"`
-	Role       int64  `json:"role"`
+	CreateTime int64    `json:"createTime"`
+	RoleId     int64  `json:"role_id"`
 	Tags       []*Tag `orm:"rel(m2m)"`
 }
 
 func init() {
-	orm.RegisterModelWithPrefix("u_db_",new(Artical),new(Tag))
+	orm.RegisterModelWithPrefix("u_db_",new(Artical))
 }
 
 func GetTags() (t []Tag,err error) {
@@ -46,12 +41,13 @@ func GetTags() (t []Tag,err error) {
 // AddArtical insert a new Artical into database and returns
 // last inserted Id on success.
 func AddArtical(m *Artical) (id int64, err error) {
-	inserter, _ := orm.NewOrm().QueryTable(new(Tag)).PrepareInsert()
+	inserter, _ := orm.NewOrm().QueryTable("u_db_tag").PrepareInsert()
 	o := orm.NewOrm()
 	if id, err = o.Insert(m);err == nil {
 		for _, v := range m.Tags {
 			inserter.Insert(&v)
 		}
+		inserter.Close()
 	}
 	return id,err
 }

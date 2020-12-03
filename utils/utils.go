@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"reflect"
 	"regexp"
 	// "fmt"
 	//"api/models"
@@ -36,7 +37,7 @@ func IsContain(items []string, item string) bool {
 }
 
 //切片中是否存在空值并返回
-func IsEmpty(params map[string]string,limitMaps []string) (err error) {
+func IsEmpty(params map[string]interface{},limitMaps []string) (err error) {
 	 if len(params) != 0 {
 		 for _,val := range limitMaps{
 		 	if params[val]  == "" {
@@ -67,6 +68,20 @@ func Tree(treeMap []map[string]interface{},pid int)[]TreeList{
 	 }
 	return branch
 }
+
+//struct转map
+func StructToMapDemo(obj interface{}) map[string]interface{}{
+	obj1 := reflect.TypeOf(obj)
+	obj2 := reflect.ValueOf(obj)
+
+	var data = make(map[string]interface{})
+	for i := 0; i < obj1.NumField(); i++ {
+		data[obj1.Field(i).Name] = obj2.Field(i).Interface()
+	}
+	return data
+}
+
+
 
 
 
