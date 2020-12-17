@@ -3,10 +3,10 @@ package controllers
 import (
 	"api/models"
 	"api/utils"
-	"time"
 	"encoding/json"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // ArticalController operations for Artical
@@ -26,27 +26,7 @@ func (c *ArticalController) URLMapping() {
 	c.Mapping("GetTags",c.GetTags)
 }
 
-// Post ...
-// @Title Post
-// @Description create Artical
-// @Param	body		body 	models.Artical	true		"body for Artical content"
-// @Success 201 {int} models.Artical
-// @Failure 403 body is empty
-// @router /1123 [post]
-func (c *ArticalController) Post() {
-	var v models.Artical
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		if _, err := models.AddArtical(&v); err == nil {
-			c.Ctx.Output.SetStatus(201)
-			c.Data["json"] = v
-		} else {
-			c.Data["json"] = err.Error()
-		}
-	} else {
-		c.Data["json"] = err.Error()
-	}
-	c.ServeJSON()
-}
+
 // tags ...
 // @Title GetTags
 // @Description get Tags
@@ -54,8 +34,8 @@ func (c *ArticalController) Post() {
 // @Failure 403 :id is empty
 // @router /tags [get]
 func (c *ArticalController) GetTags(){
-	if t, err := models.GetTags(); err == nil {
-		c.ApiJsonReturn(0,"",t)	
+	if t, err := models.GetDic("tag"); err == nil {
+		c.ApiJsonReturn(0,"",t)
 	} else {
 		c.ApiJsonReturn(1,err.Error(),"")	
 	}
@@ -82,6 +62,12 @@ func (c *ArticalController) GetOne() {
 // Add ...
 // @Title Add
 // @Description Add Artical by data
+// @Param	title	query	string	true	"artical title. e.g. 文章标题"
+// @Param	author	query	string		"Fields returned. e.g. col1,col2 ..."
+// @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
+// @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
+// @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
+// @Param	offset	query	string	false	"Start position of result set. Must be an integer"
 // @Success 200 {object} models.Artical
 // @Failure 403 :id is empty
 // @router /add [Post]
@@ -91,11 +77,12 @@ func (c *ArticalController) Add(){
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &articalStruct); err == nil {
 		articalMap := make(map[string]interface{})
 		articalMap = utils.StructToMapDemo(articalStruct)
-		if err := utils.IsEmpty(articalMap,[]string{"title","name","view"});err != nil {
+		if err := utils.IsEmpty(articalMap,[]string{"title","content"});err != nil {
 			c.Data["json"] = err
 		}else {
 			articalStruct.Author = c.Username
 			articalStruct.CreateTime = time.Now().Unix()
+			articalStruct.RoleId = c.role
 			if _, err := models.AddArtical(&articalStruct); err == nil {
 				c.Ctx.Output.SetStatus(201)
 				c.Data["json"] = articalStruct
@@ -162,10 +149,9 @@ func (c *ArticalController) GetAll() {
 	}
 	
 	//新增查询权限操作
-	if c.role != 0{
-		query["role"] = strconv.Itoa(c.role)
+	if  c.role != 0{
+		query["role_id"] = strconv.FormatInt(c.role,10)
 	}
-
 	l, err := models.GetAllArtical(query, fields, sortby, order,offset, limit)
 	if err != nil {
 		c.ApiJsonReturn(1,err.Error(),"")	

@@ -20,32 +20,30 @@ type Artical struct {
 	Author	   string `json:"author"`
 	View	   string `json:"view"`
 	Content    string `json:"content"`
-	CreateTime int64    `json:"createTime"`
+	CreateTime int64  `json:"createTime"`
 	RoleId     int64  `json:"role_id"`
 	Tags       []*Tag `orm:"rel(m2m)"`
 }
 
-func init() {
-	orm.RegisterModelWithPrefix("u_db_",new(Artical))
+type ArticalTags struct {
+	Id int `json:"id"`
+	ArticalId int64 `json:"artical_id"`
+	TagName string `json:"tag_name"`
 }
 
-func GetTags() (t []Tag,err error) {
-	o := orm.NewOrm()
-	var tags []Tag
-	if _,err = o.QueryTable(new(Tag)).All(&tags);err == nil {
-		return tags,err
-	}
-	return nil,nil;
+func init() {
+	orm.RegisterModelWithPrefix("u_db_",new(Artical),new(ArticalTags))
 }
 
 // AddArtical insert a new Artical into database and returns
 // last inserted Id on success.
 func AddArtical(m *Artical) (id int64, err error) {
-	inserter, _ := orm.NewOrm().QueryTable("u_db_tag").PrepareInsert()
+	inserter, _ := orm.NewOrm().QueryTable(new(ArticalTags)).PrepareInsert()
 	o := orm.NewOrm()
+
 	if id, err = o.Insert(m);err == nil {
 		for _, v := range m.Tags {
-			inserter.Insert(&v)
+			inserter.Insert(&ArticalTags{TagName: v.TagName,ArticalId: id})
 		}
 		inserter.Close()
 	}
@@ -69,7 +67,6 @@ func GetArticalTagsById(id int) (v Artical,err error) {
 	orm.Debug = true
 	o := orm.NewOrm()
 	artical := Artical{Id: id}
-
 	if err := o.Read(&artical); err == nil {
 		o.LoadRelated(&artical, "Tags")
 	}

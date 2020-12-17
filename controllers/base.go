@@ -13,8 +13,8 @@ import (
 
 type BaseController struct {
 	beego.Controller
-	isLogin bool     	//验证是否登录
-	role int
+	isLogin  bool     	//验证是否登录
+	role 	 int64
 	Username string
 }
 
@@ -58,7 +58,7 @@ func (b *BaseController) Prepare() {
 			b.ApiJsonReturn(1, "AuthString invalid","")
 		}
 		b.isLogin = true
-		b.role = int(claims["role"].(float64))
+		b.role = int64(claims["role"].(float64))
 		b.Username = claims["username"].(string)
 	}
 }

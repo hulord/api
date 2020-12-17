@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/astaxie/beego/orm"
-	"fmt"
 	// "reflect"
 	//"encoding/json"
 )
@@ -34,10 +33,9 @@ type Menu struct {
 
 func init(){
 	orm.RegisterModelWithPrefix("u_db_",new(Menu),new(Role),new(RoleMenus))
-
 }
 
-func GetMenuByRole(role int) (m []map[string]interface{},err error) {
+func GetMenuByRole(role int64) (m []map[string]interface{},err error) {
 	orm.Debug = true
 	o := orm.NewOrm()
 	var arm []*RoleMenus
@@ -54,7 +52,6 @@ func GetMenuByRole(role int) (m []map[string]interface{},err error) {
 		}
 		menuList = append(menuList,Menu2)
 	}
-	fmt.Println(menuList)
 	return menuList,nil
 }
 
