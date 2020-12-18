@@ -84,16 +84,14 @@ func (c *ArticalController) Add(){
 			articalStruct.CreateTime = time.Now().Unix()
 			articalStruct.RoleId = c.role
 			if _, err := models.AddArtical(&articalStruct); err == nil {
-				c.Ctx.Output.SetStatus(201)
-				c.Data["json"] = articalStruct
+				c.ApiJsonReturn(0,"新建成功",articalStruct )
 			} else {
-				c.Data["json"] = err.Error()
+				c.ApiJsonReturn(1, err.Error(),"" )
 			}
 		}
-	}else{
-		c.Data["json"] = err.Error()
+	}else {
+		c.ApiJsonReturn(1, err.Error(),"" )
 	}
-	c.ServeJSON()
 }
 
 // GetAll ...
