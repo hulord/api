@@ -173,14 +173,13 @@ func (c *ArticalController) Put() {
 	v := models.Artical{Id: id}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
 		if err := models.UpdateArticalById(&v); err == nil {
-			c.Data["json"] = "OK"
+			c.ApiJsonReturn(0,"更新成功","")
 		} else {
-			c.Data["json"] = err.Error()
+			c.ApiJsonReturn(1,err.Error(),"")
 		}
 	} else {
-		c.Data["json"] = err.Error()
+		c.ApiJsonReturn(1,err.Error(),"")
 	}
-	c.ServeJSON()
 }
 
 // Delete ...
@@ -194,11 +193,10 @@ func (c *ArticalController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
 	if err := models.DeleteArtical(id); err == nil {
-		c.Data["json"] = "OK"
+		c.ApiJsonReturn(0,"删除成功","")
 	} else {
-		c.Data["json"] = err.Error()
+		c.ApiJsonReturn(1,err.Error(),"")
 	}
-	c.ServeJSON()
 }
 
 // Test ...

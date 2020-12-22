@@ -25,25 +25,26 @@ type Artical struct {
 	Tags       []*Tag `orm:"rel(m2m)"`
 }
 
-type ArticalTags struct {
+type Tag struct {
 	Id int `json:"id"`
-	ArticalId int64 `json:"artical_id"`
 	TagName string `json:"tag_name"`
+	Articals []*Artical `orm:"reverse(many)"`
 }
+//ArticalId int64 `json:"artical_id"`
 
 func init() {
-	orm.RegisterModelWithPrefix("u_db_",new(Artical),new(ArticalTags))
+	orm.RegisterModelWithPrefix("u_db_",new(Artical),new(Tag))
 }
 
 // AddArtical insert a new Artical into database and returns
 // last inserted Id on success.
 func AddArtical(m *Artical) (id int64, err error) {
-	inserter, _ := orm.NewOrm().QueryTable(new(ArticalTags)).PrepareInsert()
+	inserter, _ := orm.NewOrm().QueryTable(new(Tag)).PrepareInsert()
 	o := orm.NewOrm()
-
 	if id, err = o.Insert(m);err == nil {
 		for _, v := range m.Tags {
-			inserter.Insert(&ArticalTags{TagName: v.TagName,ArticalId: id})
+			_,err = inserter.Insert(&Tag{TagName: v.TagName})
+			fmt.Println(err)
 		}
 		inserter.Close()
 	}
@@ -81,7 +82,7 @@ func GetArticalTags2ById(id int) (v Artical,err error) {
 	o := orm.NewOrm()
 	artical := Artical{Id: id}
 	if err := o.Read(&artical); err == nil {
-		o.LoadRelated(&artical, "Tags")
+		o.LoadRelated(&artical, "Tag")
 	}
 	return artical,nil		
 }
@@ -201,12 +202,14 @@ func DeleteArtical(id int) (err error) {
 	v := Artical{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
-		var num int64
-		if num, err = o.Delete(&Artical{Id: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
-		}
+		m2m := o.QueryM2M(&v, "Tags")
+		//num, err := m2m.Remove(v.Tags)
+		fmt.Println(m2m.Remove(Tag{Id: 1,TagName: "php"}))
+		//if _, err = o.Delete(&v); err == nil {
+		//	return  err
+		//}
 	}
-	return
+	return err
 }
 
 
