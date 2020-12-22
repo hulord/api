@@ -22,7 +22,7 @@ type Artical struct {
 	Content    string `json:"content"`
 	CreateTime int64  `json:"createTime"`
 	RoleId     int64  `json:"role_id"`
-	Tags       []*Tag `orm:"rel(m2m)"`
+	Tags       []*Tag `orm:"rel(m2m)";cascade`
 }
 
 type Tag struct {
@@ -202,12 +202,9 @@ func DeleteArtical(id int) (err error) {
 	v := Artical{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
-		m2m := o.QueryM2M(&v, "Tags")
-		//num, err := m2m.Remove(v.Tags)
-		fmt.Println(m2m.Remove(Tag{Id: 1,TagName: "php"}))
-		//if _, err = o.Delete(&v); err == nil {
-		//	return  err
-		//}
+		if _, err = o.Delete(&v); err == nil {
+			return  err
+		}
 	}
 	return err
 }
