@@ -30,7 +30,7 @@ type Artical struct {
 type Tag struct {
 	Id int `json:"id"`
 	TagName string `json:"tag_name"`
-	Artical *Artical `orm:"rel(fk);"`
+	Artical *Artical `json:"-"                          orm:"rel(fk)"`
 }
 
 func init() {
