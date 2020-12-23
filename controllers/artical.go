@@ -4,9 +4,9 @@ import (
 	"api/models"
 	"api/utils"
 	"encoding/json"
+	"math/rand"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // ArticalController operations for Artical
@@ -81,7 +81,7 @@ func (c *ArticalController) Add(){
 			c.Data["json"] = err
 		}else {
 			articalStruct.Author = c.Username
-			articalStruct.CreateTime = time.Now().Unix()
+			articalStruct.View = rand.Intn(100)
 			articalStruct.RoleId = c.role
 			if _, err := models.AddArtical(&articalStruct); err == nil {
 				c.ApiJsonReturn(0,"新建成功",articalStruct )

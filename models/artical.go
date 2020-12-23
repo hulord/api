@@ -3,9 +3,10 @@ package models
 import (
 	"errors"
 	"fmt"
+	"github.com/astaxie/beego/orm"
 	"reflect"
 	"strings"
-	"github.com/astaxie/beego/orm"
+	"time"
 )
 type ArticalList struct{
 	ShowCount int64 `json:"showCount"`
@@ -18,19 +19,19 @@ type Artical struct {
 	Id         int    `json:"id"`
 	Title      string `json:"title"`
 	Author	   string `json:"author"`
-	View	   string `json:"view"`
+	View	   int `json:"view"`
 	Content    string `json:"content"`
-	CreateTime int64  `json:"createTime"`
+	CreateTime time.Time  `json:"create_time"          orm:"auto_now_add;type(datetime)"`
+	UpdateTime time.Time  `json:"update_time"          orm:"auto_now";type(datetime)`
 	RoleId     int64  `json:"role_id"`
-	Tags       []*Tag `orm:"rel(m2m)";cascade`
+	Tags       []*Tag `orm:"reverse(many)"`
 }
 
 type Tag struct {
 	Id int `json:"id"`
 	TagName string `json:"tag_name"`
-	Articals []*Artical `orm:"reverse(many)"`
+	Artical *Artical `orm:"rel(fk);"`
 }
-//ArticalId int64 `json:"artical_id"`
 
 func init() {
 	orm.RegisterModelWithPrefix("u_db_",new(Artical),new(Tag))
@@ -43,8 +44,7 @@ func AddArtical(m *Artical) (id int64, err error) {
 	o := orm.NewOrm()
 	if id, err = o.Insert(m);err == nil {
 		for _, v := range m.Tags {
-			_,err = inserter.Insert(&Tag{TagName: v.TagName})
-			fmt.Println(err)
+			_,err = inserter.Insert(&Tag{TagName: v.TagName,Artical:&Artical{Id:int(id) }})
 		}
 		inserter.Close()
 	}
@@ -202,6 +202,7 @@ func DeleteArtical(id int) (err error) {
 	v := Artical{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
+		o.LoadRelated(&v, "Tags")
 		if _, err = o.Delete(&v); err == nil {
 			return  err
 		}
