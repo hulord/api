@@ -51,9 +51,9 @@ func (c *ArticalController) GetTags(){
 func (c *ArticalController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	v, err := models.GetArticalTagsById(id)
+	v, err := models.GetArticalById(id)
 	if err != nil {
-		c.ApiJsonReturn(1,err.Error(),"")	
+		c.ApiJsonReturn(1,"文章内容不存在","")
 	} else {
 		c.ApiJsonReturn(0,"",v)	
 	}
@@ -168,18 +168,20 @@ func (c *ArticalController) GetAll() {
 // @Failure 403 :id is not int
 // @router /:id [put]
 func (c *ArticalController) Put() {
-	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.Atoi(idStr)
-	v := models.Artical{Id: id}
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		if err := models.UpdateArticalById(&v); err == nil {
-			c.ApiJsonReturn(0,"更新成功","")
-		} else {
-			c.ApiJsonReturn(1,err.Error(),"")
-		}
-	} else {
-		c.ApiJsonReturn(1,err.Error(),"")
-	}
+	var articalStruct models.Artical
+	json.Unmarshal(c.Ctx.Input.RequestBody, &articalStruct)
+	//idStr := c.Ctx.Input.Param(":id")
+	//id, _ := strconv.Atoi(idStr)
+	//v := models.Artical{Id: id}
+	//if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
+	//	if err := models.UpdateArticalById(&v); err == nil {
+	//		c.ApiJsonReturn(0,"更新成功","")
+	//	} else {
+	//		c.ApiJsonReturn(1,err.Error(),"")
+	//	}
+	//} else {
+	//	c.ApiJsonReturn(1,err.Error(),"")
+	//}
 }
 
 // Delete ...
