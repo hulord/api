@@ -51,9 +51,9 @@ func (c *ArticalController) GetTags(){
 func (c *ArticalController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	v, err := models.GetArticalTagsById(id)
+	v, err := models.GetArticalById(id)
 	if err != nil {
-		c.ApiJsonReturn(1,err.Error(),"")	
+		c.ApiJsonReturn(1,"文章内容不存在","")
 	} else {
 		c.ApiJsonReturn(0,"",v)	
 	}

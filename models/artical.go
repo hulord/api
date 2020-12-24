@@ -53,25 +53,15 @@ func AddArtical(m *Artical) (id int64, err error) {
 
 // GetArticalById retrieves Artical by Id. Returns error if
 // Id doesn't exist
-func GetArticalById(id int) (v *Artical, err error) {
-	o := orm.NewOrm()
-	v = &Artical{Id: id}
-	if err = o.Read(v); err == nil {
-		return v, nil
-	}
-	return nil, err
-}
-
-// GetArticalById retrieves Artical by Id. Returns error if
-// Id doesn't exist
-func GetArticalTagsById(id int) (v Artical,err error) {
+func GetArticalById(id int) (v *Artical,err error) {
 	orm.Debug = true
 	o := orm.NewOrm()
 	artical := Artical{Id: id}
-	if err := o.Read(&artical); err == nil {
+	if  err = o.Read(&artical);err == nil {
 		o.LoadRelated(&artical, "Tags")
+		return &artical,nil
 	}
-	return artical,nil		
+	return nil,err
 }
 
 
