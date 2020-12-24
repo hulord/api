@@ -168,12 +168,12 @@ func (c *ArticalController) GetAll() {
 // @Failure 403 :id is not int
 // @router /:id [put]
 func (c *ArticalController) Put() {
+	var articalStruct models.Artical
 	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.Atoi(idStr)
-	v := models.Artical{Id: id}
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		if err := models.UpdateArticalById(&v); err == nil {
-			c.ApiJsonReturn(0,"更新成功","")
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &articalStruct); err == nil {
+		id, _ := strconv.Atoi(idStr)
+		if err := models.UpdateArticalById(id,&articalStruct); err == nil {
+			//c.ApiJsonReturn(0,"更新成功","")
 		} else {
 			c.ApiJsonReturn(1,err.Error(),"")
 		}

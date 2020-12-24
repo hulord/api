@@ -78,7 +78,6 @@ func GetArticalTagsById(id int) (v Artical,err error) {
 // GetArticalById retrieves Artical by Id. Returns error if
 // Id doesn't exist
 func GetArticalTags2ById(id int) (v Artical,err error) {
-	orm.Debug = true
 	o := orm.NewOrm()
 	artical := Artical{Id: id}
 	if err := o.Read(&artical); err == nil {
@@ -182,17 +181,22 @@ func GetAllArtical(query map[string]string, fields []string, sortby []string, or
 
 // UpdateArtical updates Artical by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateArticalById(m *Artical) (err error) {
+func UpdateArticalById(id int,m *Artical) (err error) {
 	o := orm.NewOrm()
-	v := Artical{Id: m.Id}
-	// ascertain id exists in the database
+	v := Artical{Id: id}
 	if err = o.Read(&v); err == nil {
-		var num int64
-		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+		o.LoadRelated(&v, "Tags")
+		v.Tags = m.Tags
+		v.Title = m.Title
+
+		orm.Debug = true	
+		if _, err = o.Update(&v); err == nil {
+			return nil
+		}else{
+			fmt.Println(err)
 		}
 	}
-	return
+	return err
 }
 
 // DeleteArtical deletes Artical by Id and returns error if
