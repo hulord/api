@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"fmt"
 	"github.com/astaxie/beego/orm"
 	"reflect"
 	"strings"
@@ -175,19 +174,31 @@ func UpdateArticalById(id int,m *Artical) (err error) {
 	o := orm.NewOrm()
 	v := Artical{Id: id}
 	if err = o.Read(&v); err == nil {
-		o.LoadRelated(&v, "Tags")
-		v.Tags = m.Tags
-		v.Title = m.Title
-
-		orm.Debug = true	
-		if _, err = o.Update(&v); err == nil {
-			return nil
-		}else{
-			fmt.Println(err)
+		if err  = UpdateTagsForArtical(id,m.Tags);err == nil {
+			v.Title = m.Title
+			v.Content = m.Content
+			_, err = o.Update(&v)
 		}
 	}
 	return err
 }
+
+/** Delete Articals Tag whith artical_id
+ */
+func UpdateTagsForArtical( id int ,tags []*Tag)(err error){
+	orm.Debug = true
+	ormer := orm.NewOrm().QueryTable(new(Tag))
+	inserter, _ := ormer.PrepareInsert()
+	if _, err := ormer.Filter("artical_id",id).Delete();err == nil {
+			for _, v := range tags {
+				_,err = inserter.Insert(&Tag{TagName: v.TagName,Artical:&Artical{Id:id }})
+			}
+	}
+	return err
+}
+
+
+
 
 // DeleteArtical deletes Artical by Id and returns error if
 // the record to be deleted doesn't exist

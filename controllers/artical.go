@@ -173,7 +173,7 @@ func (c *ArticalController) Put() {
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &articalStruct); err == nil {
 		id, _ := strconv.Atoi(idStr)
 		if err := models.UpdateArticalById(id,&articalStruct); err == nil {
-			//c.ApiJsonReturn(0,"更新成功","")
+			c.ApiJsonReturn(0,"更新成功","")
 		} else {
 			c.ApiJsonReturn(1,err.Error(),"")
 		}
