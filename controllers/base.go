@@ -1,14 +1,13 @@
 package controllers
 
 import (
+	"api/models"
+	utils "api/utils"
+	"errors"
 	"github.com/astaxie/beego"
 	"github.com/dgrijalva/jwt-go"
-	utils "api/utils"
 	"strings"
-	"fmt"
-	"api/models"
-	"time" 
-	"errors"
+	"time"
 )
 
 type BaseController struct {
@@ -111,14 +110,12 @@ func ParseToken(tokenss string)(j jwt.MapClaims,err error){
     }
     claim,ok := token.Claims.(jwt.MapClaims)
     if !ok{
-		fmt.Println("111")
-
+		return  nil,errors.New("校验码非法")
     }
     //验证token，如果token被修改过则为false
     if  !token.Valid{
-	 fmt.Println("222")
+	 	return  nil,errors.New("校验码非法")
     }
-
     return claim,nil
 }
 

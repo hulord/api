@@ -147,16 +147,15 @@ func (c *ArticalController) GetAll() {
 	}
 	
 	//新增查询权限操作
-	if  c.role != 0{
-		query["role_id"] = strconv.FormatInt(c.role,10)
-	}
+	//if  c.role != 0{
+	//	query["role_id"] = strconv.FormatInt(c.role,10)
+	//}
 	l, err := models.GetAllArtical(query, fields, sortby, order,offset, limit)
 	if err != nil {
 		c.ApiJsonReturn(1,err.Error(),"")	
 	} else {
 		c.ApiJsonReturn(0,"成功",l)	
 	}
-
 }
 
 // Put ...

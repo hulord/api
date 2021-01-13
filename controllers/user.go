@@ -40,7 +40,6 @@ func (u *UserController) Login(){
 	}else{	
 		u.ApiJsonReturn(1, "无效的用户名和密码","")	
 	}
-
 }
 
 // @Title Get
