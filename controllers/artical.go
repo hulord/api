@@ -24,6 +24,7 @@ func (c *ArticalController) URLMapping() {
 	c.Mapping("Test1",c.Test1)
 	c.Mapping("Add",c.Add)
 	c.Mapping("GetTags",c.GetTags)
+	c.Mapping("GetTopAndNewList",c.GetTopAndNewList)
 }
 
 
@@ -210,10 +211,27 @@ func (c *ArticalController) Test() {
 	id, _ := strconv.Atoi(idStr)
 	l, err := models.GetArticalTags2ById(id)
 	if err != nil {
-		c.ApiJsonReturn(1,err.Error(),"")	
+		c.ApiJsonReturn(1,err.Error(),"")
 	} else {
-		c.ApiJsonReturn(0,"",l)	
+		c.ApiJsonReturn(0,"",l)
 	}
+}
+
+// Test ...
+// @Title top and new artical list
+// @Description show artical list
+// @Param	id		path 	string	true		"The id you want to delete"
+// @Success 200 {string} delete success!
+// @Failure 403 id is empty
+// @router /GetTopAndNewList/:size [GET]
+func (c *ArticalController) GetTopAndNewList() {
+	size := c.Ctx.Input.Param(":size")
+	sizeInt, _ := strconv.ParseInt(size,10,64)
+	l,err := models.GetTopAndNewArticalList(sizeInt)
+	if err!=nil {
+		c.ApiJsonReturn(1,err.Error(),"")
+	}
+	c.ApiJsonReturn(0,"",l)
 }
 
 // Test ...

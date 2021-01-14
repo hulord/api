@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"github.com/astaxie/beego/orm"
 	"reflect"
 	"strings"
@@ -12,6 +13,13 @@ type ArticalList struct{
 	CurrentPage int64 `json:"currentPage"`
 	TotalResult int64 `json:"totalResult"`
 	DataList []interface{} `json:"dataList"`
+}
+
+type TopAndNewArticalList struct{
+	Id int64 `json:"id"`
+	Title int64 `json:"title"`
+	View int64 `json:"view"`
+	CreateTime time.Time `json:"create_time"`
 }
 
 type Artical struct {
@@ -213,6 +221,25 @@ func DeleteArtical(id int) (err error) {
 		}
 	}
 	return err
+}
+//get Top and new artical for home/index
+func GetTopAndNewArticalList( size int64 )(list map[string]interface{},err error) {
+	var TopList []*Artical
+	o := orm.NewOrm()
+	qs := o.QueryTable(new(Artical))
+	num ,err := qs.OrderBy("-view").Limit(size).All(&TopList,"Id","View","Title","CreateTime")
+	fmt.Println(num,err,TopList)
+	if num == 0 || err != nil{
+		return nil,err
+	}
+	var  NewList []*Artical
+	num , err  = qs.OrderBy("-create_time").Limit(size).All(&NewList,"Id","View","Title","CreateTime")
+	if num == 0 ||  err != nil{
+		return nil, err
+	}
+	list["TopList"] = {"fdas","fdasf"}
+	list["NewList"] = string{"1","2"}
+	return list,nil
 }
 
 
