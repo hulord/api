@@ -205,9 +205,6 @@ func UpdateTagsForArtical( id int ,tags []*Tag)(err error){
 	return err
 }
 
-
-
-
 // DeleteArtical deletes Artical by Id and returns error if
 // the record to be deleted doesn't exist
 func DeleteArtical(id int) (err error) {
@@ -222,23 +219,25 @@ func DeleteArtical(id int) (err error) {
 	}
 	return err
 }
+
 //get Top and new artical for home/index
 func GetTopAndNewArticalList( size int64 )(list map[string]interface{},err error) {
-	var TopList []*Artical
+	var TopList []orm.Params
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Artical))
-	num ,err := qs.OrderBy("-view").Limit(size).All(&TopList,"Id","View","Title","CreateTime")
+	num ,err := qs.OrderBy("-view").Limit(size).Values(&TopList,"id","view","title","createTime")
 	fmt.Println(num,err,TopList)
 	if num == 0 || err != nil{
 		return nil,err
 	}
-	var  NewList []*Artical
-	num , err  = qs.OrderBy("-create_time").Limit(size).All(&NewList,"Id","View","Title","CreateTime")
+	var  NewList []orm.Params
+	num , err  = qs.OrderBy("-create_time").Limit(size).Values(&NewList,"id","view","title","createTime")
 	if num == 0 ||  err != nil{
 		return nil, err
 	}
-	list["TopList"] = {"fdas","fdasf"}
-	list["NewList"] = string{"1","2"}
+	list = make(map[string]interface{})
+	list["TopList"] = TopList
+	list["NewList"] = NewList
 	return list,nil
 }
 
