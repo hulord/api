@@ -32,7 +32,7 @@ type JsonReturn struct {
 func (b *BaseController) Prepare() {
     //验证用户是否需要登录
 	b.isLogin = false
-	var LimitUri = []string{"/v1/artical/getall","/v1/artical/([1-9]+)","/v1/artical/GetTopAndNewList/([1-9]+)","/v1/artical/test/([1-9]+)","/v1/user/login","/v1/menu","/artical/Test1"}
+	var LimitUri = []string{"/v1/artical/getall","/v1/common/getWeather/([1-9]+)","/v1/artical/([1-9]+)","/v1/artical/GetTopAndNewList/([1-9]+)","/v1/user/login","/v1/menu"}
 	var isFlag  = false
 	if utils.IsContain(LimitUri,b.Ctx.Request.RequestURI){
 		 isFlag = true

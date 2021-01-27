@@ -34,6 +34,11 @@ func init() {
 				&controllers.MenuController{},
 			),
 		),
+		beego.NSNamespace("/common",
+			beego.NSInclude(
+				&controllers.CommonlController{},
+			),
+		),
 		beego.NSNamespace("/error",
 			beego.NSInclude(
 				&controllers.ErrorController{},
