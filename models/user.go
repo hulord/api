@@ -17,6 +17,7 @@ type User struct {
 	Address  string		`json:"address"`
 	Email    string		`json:"email"`
 	Role     int        `json:"role"`
+	Salf     string     `json:"salf"`
 }
 
 func GetUserById(id int) (u User, err error) {

@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"api/models"
 	"encoding/json"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Operations about Users
@@ -31,7 +32,8 @@ func (u *UserController) Login(){
 		u.ApiJsonReturn(1, "无效的用户名和密码","")
 	}
 	if user.Id!=0 {
-		if user.Password == login_user.Password {
+		err = bcrypt.CompareHashAndPassword([]byte(user.Password),[]byte(login_user.Password))
+		if err ==nil {
 			token,_ := CreateToken(user,6000)
 			u.ApiJsonReturn(0, "登录成功",token)
 		}else{
@@ -61,6 +63,18 @@ func (u *UserController) Get() {
 		
 	}
 	u.ServeJSON()
+}
+
+
+// @Title encodePassword
+// @Description encode password
+// @Success 200 {object} models.User
+// @Failure 403 encode is wrong
+// @router /encodePassword [get]
+func (u *UserController) EncodePassword(){
+	hash, _:= bcrypt.GenerateFromPassword([]byte("admin"),bcrypt.DefaultCost);
+	u.ApiJsonReturn(0, string(hash),"")	
+
 }
 
 	
