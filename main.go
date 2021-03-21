@@ -15,7 +15,8 @@ func init() {
 	//注册驱动
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	//注册默认数据库
-	orm.RegisterDataBase("default", "mysql", "root:root@(localhost:3306)/test?charset=utf8")//密码为空格式
+	//orm.RegisterDataBase("default", "mysql", "root:root@(localhost:3306)/test?charset=utf8")//密码为空格式
+	orm.RegisterDataBase("default", "mysql", "root:19930202a@(cdb-om56p9rc.cd.tencentcdb.com:10014)/u_db_site?charset=utf8")//密码为空格式
 	orm.RunSyncdb("default", false, false)
 }
 
