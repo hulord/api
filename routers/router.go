@@ -24,6 +24,11 @@ func init() {
 				&controllers.AccountController{},
 			),
 		),
+		beego.NSNamespace("/image",
+		beego.NSInclude(
+			&controllers.ImageController{},
+		),
+	),
 		beego.NSNamespace("/user",
 			beego.NSInclude(
 				&controllers.UserController{},

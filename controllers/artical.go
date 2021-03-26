@@ -112,7 +112,7 @@ func (c *ArticalController) GetAll() {
 	var sortby []string
 	var order  []string
 	var query = make(map[string]string)
-	var limit int64 = 10
+	var limit int64 = 10 
 	var offset int64
 	// fields: col1,col2,entity.col3
 	if v := c.GetString("fields"); v != "" {
@@ -242,5 +242,15 @@ func (c *ArticalController) GetTopAndNewList() {
 // @Failure 403 id is empty
 // @router /Test1 [Post]
 func (c *ArticalController) Test1() {
+	c.ApiJsonReturn(0,"",1)	
+}
+// upload file ...
+// @Title Delete
+// @Description delete the Artical
+// @Param	File 	string	true		"The id you want to delete"
+// @Success 200 {string} delete success!
+// @Failure 403 id is empty
+// @router /Upload [Post]
+func (c *ArticalController) UploadFile() {
 	c.ApiJsonReturn(0,"",1)	
 }
