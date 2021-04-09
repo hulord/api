@@ -10,12 +10,12 @@ import (
 )
 
 type Image struct {
-	Id         int64
-	Name       string `orm:"size(128)"`
-	Type       string `orm:"size(50)"`
-	Url        string `orm:"size(128)"`
-	CreateTime time.Time  `json:"create_time"          orm:"auto_now_add;type(datetime)"`
-	UpdateTime time.Time  `json:"update_time"          orm:"auto_now";type(datetime)`
+	Id         int64 `json:"uid"`
+	Name       string `json:"name" orm:"size(128)"`
+	Type       string `orm:"size(50)" json:"-"`
+	Url        string `json:"url" orm:"size(128)"`
+	CreateTime time.Time  `json:"-"          orm:"auto_now_add;type(datetime)"`
+	UpdateTime time.Time  `json:"-"          orm:"auto_now";type(datetime)`
 }
 
 func init() {

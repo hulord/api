@@ -9,6 +9,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+
+
 func init() {
 	//注册 model
 	orm.RegisterModelWithPrefix("u_db_",new(models.User))

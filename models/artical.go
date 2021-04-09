@@ -31,6 +31,7 @@ type Artical struct {
 	CreateTime time.Time  `json:"create_time"          orm:"auto_now_add;type(datetime)"`
 	UpdateTime time.Time  `json:"update_time"          orm:"auto_now";type(datetime)`
 	RoleId     int64  `json:"role_id"`
+	Image    *Image `json:"images"  orm:"rel(fk)"`
 	Tags       []*Tag `orm:"reverse(many)"`
 }
 
@@ -39,6 +40,9 @@ type Tag struct {
 	TagName string `json:"tag_name"`
 	Artical *Artical `json:"-"                          orm:"rel(fk)"`
 }
+
+
+
 
 func init() {
 	orm.RegisterModelWithPrefix("u_db_",new(Artical),new(Tag))
@@ -63,10 +67,11 @@ func AddArtical(m *Artical) (id int64, err error) {
 func GetArticalById(id int) (v *Artical,err error) {
 	orm.Debug = true
 	o := orm.NewOrm()
-	artical := Artical{Id: id}
-	if  err = o.Read(&artical);err == nil {
-		o.LoadRelated(&artical, "Tags")
-		return &artical,nil
+	artical := &Artical{}
+	o.QueryTable(new(Artical)).Filter("Id", id).RelatedSel().One(artical)
+	_,err = o.LoadRelated(artical, "Tags")
+	if err == nil {
+		return artical,nil
 	}
 	return nil,err
 }
@@ -240,6 +245,8 @@ func GetTopAndNewArticalList( size int64 )(list map[string]interface{},err error
 	list["NewList"] = NewList
 	return list,nil
 }
+
+
 
 
 

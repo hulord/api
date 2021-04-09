@@ -7,6 +7,11 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
+	"path"
+	"time"
+	"fmt"
+	"os"
+	"crypto/md5"
 )
 
 // ArticalController operations for Artical
@@ -21,7 +26,6 @@ func (c *ArticalController) URLMapping() {
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
-	c.Mapping("Test1",c.Test1)
 	c.Mapping("Add",c.Add)
 	c.Mapping("GetTags",c.GetTags)
 	c.Mapping("GetTopAndNewList",c.GetTopAndNewList)
@@ -234,16 +238,6 @@ func (c *ArticalController) GetTopAndNewList() {
 	c.ApiJsonReturn(0,"",l)
 }
 
-// Test ...
-// @Title Delete
-// @Description delete the Artical
-// @Param	id		path 	string	true		"The id you want to delete"
-// @Success 200 {string} delete success!
-// @Failure 403 id is empty
-// @router /Test1 [Post]
-func (c *ArticalController) Test1() {
-	c.ApiJsonReturn(0,"",1)	
-}
 // upload file ...
 // @Title Delete
 // @Description delete the Artical
@@ -252,5 +246,28 @@ func (c *ArticalController) Test1() {
 // @Failure 403 id is empty
 // @router /Upload [Post]
 func (c *ArticalController) UploadFile() {
-	c.ApiJsonReturn(0,"",1)	
+	 f, h, _ := c.GetFile("file") //获取上传的文件
+	 ext := path.Ext(h.Filename)
+
+	//创建目录
+	uploadDir := "static/upload/" + time.Now().Format("2006/01/02/")
+	err := os.MkdirAll( uploadDir , 777)
+	if err != nil {
+		c.ApiJsonReturn(1,"上传失败","")
+	}
+	//构造文件名称
+	rand.Seed(time.Now().UnixNano())
+	randNum := fmt.Sprintf("%d", rand.Intn(9999)+1000 )
+	hashName := md5.Sum( []byte( time.Now().Format("2006_01_02_15_04_05_") + randNum ) )
+
+	fileName := fmt.Sprintf("%x",hashName) + ext
+	//this.Ctx.WriteString(  fileName )
+
+	fpath := uploadDir + fileName
+	defer f.Close()//关闭上传的文件，不然的话会出现临时文件不能清除的情况
+	err = c.SaveToFile("file", fpath)
+	if err != nil {
+		c.ApiJsonReturn(1,"上传失败","")
+	}
+	 c.ApiJsonReturn(0,"上传成功",fpath)
 }
