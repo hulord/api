@@ -3,49 +3,48 @@ package models
 import (
 	"errors"
 	"fmt"
-	"github.com/astaxie/beego/orm"
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/astaxie/beego/orm"
 )
-type ArticalList struct{
-	ShowCount int64 `json:"showCount"`
-	CurrentPage int64 `json:"currentPage"`
-	TotalResult int64 `json:"totalResult"`
-	DataList []interface{} `json:"dataList"`
+
+type ArticalList struct {
+	ShowCount   int64         `json:"showCount"`
+	CurrentPage int64         `json:"currentPage"`
+	TotalResult int64         `json:"totalResult"`
+	DataList    []interface{} `json:"dataList"`
 }
 
-type TopAndNewArticalList struct{
-	Id int64 `json:"id"`
-	Title int64 `json:"title"`
-	View int64 `json:"view"`
+type TopAndNewArticalList struct {
+	Id         int64     `json:"id"`
+	Title      int64     `json:"title"`
+	View       int64     `json:"view"`
 	CreateTime time.Time `json:"create_time"`
 }
 
 type Artical struct {
-	Id         int    `json:"id"`
-	Title      string `json:"title"`
-	Author	   string `json:"author"`
-	View	   int `json:"view"`
-	Content    string `json:"content"`
-	CreateTime time.Time  `json:"create_time"          orm:"auto_now_add;type(datetime)"`
-	UpdateTime time.Time  `json:"update_time"          orm:"auto_now";type(datetime)`
-	RoleId     int64  `json:"role_id"`
-	Image    *Image `json:"images"  orm:"rel(fk)"`
-	Tags       []*Tag `orm:"reverse(many)"`
+	Id         int       `json:"id"`
+	Title      string    `json:"title"`
+	Author     string    `json:"author"`
+	View       int       `json:"view"`
+	Content    string    `json:"content"`
+	CreateTime time.Time `json:"create_time"          orm:"auto_now_add;type(datetime)"`
+	UpdateTime time.Time `json:"update_time"          orm:"auto_now";type(datetime)`
+	RoleId     int64     `json:"role_id"`
+	Image      *Image    `json:"images"  orm:"rel(fk)"`
+	Tags       []*Tag    `orm:"reverse(many)"`
 }
 
 type Tag struct {
-	Id int `json:"id"`
-	TagName string `json:"tag_name"`
+	Id      int      `json:"id"`
+	TagName string   `json:"tag_name"`
 	Artical *Artical `json:"-"                          orm:"rel(fk)"`
 }
 
-
-
-
 func init() {
-	orm.RegisterModelWithPrefix("u_db_",new(Artical),new(Tag))
+	orm.RegisterModelWithPrefix("u_db_", new(Artical), new(Tag))
 }
 
 // AddArtical insert a new Artical into database and returns
@@ -53,41 +52,39 @@ func init() {
 func AddArtical(m *Artical) (id int64, err error) {
 	inserter, _ := orm.NewOrm().QueryTable(new(Tag)).PrepareInsert()
 	o := orm.NewOrm()
-	if id, err = o.Insert(m);err == nil {
+	if id, err = o.Insert(m); err == nil {
 		for _, v := range m.Tags {
-			_,err = inserter.Insert(&Tag{TagName: v.TagName,Artical:&Artical{Id:int(id) }})
+			_, err = inserter.Insert(&Tag{TagName: v.TagName, Artical: &Artical{Id: int(id)}})
 		}
 		inserter.Close()
 	}
-	return id,err
+	return id, err
 }
 
 // GetArticalById retrieves Artical by Id. Returns error if
 // Id doesn't exist
-func GetArticalById(id int) (v *Artical,err error) {
+func GetArticalById(id int) (v *Artical, err error) {
 	orm.Debug = true
 	o := orm.NewOrm()
 	artical := &Artical{}
 	o.QueryTable(new(Artical)).Filter("Id", id).RelatedSel().One(artical)
-	_,err = o.LoadRelated(artical, "Tags")
+	_, err = o.LoadRelated(artical, "Tags")
 	if err == nil {
-		return artical,nil
+		return artical, nil
 	}
-	return nil,err
+	return nil, err
 }
-
 
 // GetArticalById retrieves Artical by Id. Returns error if
 // Id doesn't exist
-func GetArticalTags2ById(id int) (v Artical,err error) {
+func GetArticalTags2ById(id int) (v Artical, err error) {
 	o := orm.NewOrm()
 	artical := Artical{Id: id}
 	if err := o.Read(&artical); err == nil {
 		o.LoadRelated(&artical, "Tag")
 	}
-	return artical,nil		
+	return artical, nil
 }
-
 
 // GetAllArtical retrieves all Artical matches certain condition. Returns empty list if
 // no records exist
@@ -106,7 +103,7 @@ func GetAllArtical(query map[string]string, fields []string, sortby []string, or
 			qs = qs.Filter(k, v)
 		}
 	}
-
+	qs = qs.RelatedSel()
 	// order by:
 	var sortFields []string
 	if len(sortby) != 0 {
@@ -149,8 +146,8 @@ func GetAllArtical(query map[string]string, fields []string, sortby []string, or
 	var l []Artical
 	qs = qs.OrderBy(sortFields...)
 	var ml []interface{}
-	
-	if count,err := qs.Count(); err == nil {
+
+	if count, err := qs.Count(); err == nil {
 		articalList.TotalResult = count
 	} else {
 		articalList.TotalResult = 0
@@ -158,7 +155,7 @@ func GetAllArtical(query map[string]string, fields []string, sortby []string, or
 	articalList.CurrentPage = offset
 	articalList.ShowCount = limit
 
-	offset =  (offset-1)*limit
+	offset = (offset - 1) * limit
 	if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
 		if len(fields) == 0 {
 			for _, v := range l {
@@ -183,13 +180,14 @@ func GetAllArtical(query map[string]string, fields []string, sortby []string, or
 
 // UpdateArtical updates Artical by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateArticalById(id int,m *Artical) (err error) {
+func UpdateArticalById(id int, m *Artical) (err error) {
 	o := orm.NewOrm()
 	v := Artical{Id: id}
 	if err = o.Read(&v); err == nil {
-		if err  = UpdateTagsForArtical(id,m.Tags);err == nil {
+		if err = UpdateTagsForArtical(id, m.Tags); err == nil {
 			v.Title = m.Title
 			v.Content = m.Content
+			v.Image = m.Image
 			_, err = o.Update(&v)
 		}
 	}
@@ -198,14 +196,14 @@ func UpdateArticalById(id int,m *Artical) (err error) {
 
 /** Delete Articals Tag whith artical_id
  */
-func UpdateTagsForArtical( id int ,tags []*Tag)(err error){
+func UpdateTagsForArtical(id int, tags []*Tag) (err error) {
 	orm.Debug = true
 	ormer := orm.NewOrm().QueryTable(new(Tag))
 	inserter, _ := ormer.PrepareInsert()
-	if _, err := ormer.Filter("artical_id",id).Delete();err == nil {
-			for _, v := range tags {
-				_,err = inserter.Insert(&Tag{TagName: v.TagName,Artical:&Artical{Id:id }})
-			}
+	if _, err := ormer.Filter("artical_id", id).Delete(); err == nil {
+		for _, v := range tags {
+			_, err = inserter.Insert(&Tag{TagName: v.TagName, Artical: &Artical{Id: id}})
+		}
 	}
 	return err
 }
@@ -219,36 +217,29 @@ func DeleteArtical(id int) (err error) {
 	if err = o.Read(&v); err == nil {
 		o.LoadRelated(&v, "Tags")
 		if _, err = o.Delete(&v); err == nil {
-			return  err
+			return err
 		}
 	}
 	return err
 }
 
 //get Top and new artical for home/index
-func GetTopAndNewArticalList( size int64 )(list map[string]interface{},err error) {
+func GetTopAndNewArticalList(size int64) (list map[string]interface{}, err error) {
 	var TopList []orm.Params
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Artical))
-	num ,err := qs.OrderBy("-view").Limit(size).Values(&TopList,"id","view","title","createTime")
-	fmt.Println(num,err,TopList)
-	if num == 0 || err != nil{
-		return nil,err
+	num, err := qs.OrderBy("-view").Limit(size).Values(&TopList, "id", "view", "title", "createTime")
+	fmt.Println(num, err, TopList)
+	if num == 0 || err != nil {
+		return nil, err
 	}
-	var  NewList []orm.Params
-	num , err  = qs.OrderBy("-create_time").Limit(size).Values(&NewList,"id","view","title","createTime")
-	if num == 0 ||  err != nil{
+	var NewList []orm.Params
+	num, err = qs.OrderBy("-create_time").Limit(size).Values(&NewList, "id", "view", "title", "createTime")
+	if num == 0 || err != nil {
 		return nil, err
 	}
 	list = make(map[string]interface{})
 	list["TopList"] = TopList
 	list["NewList"] = NewList
-	return list,nil
+	return list, nil
 }
-
-
-
-
-
-
-

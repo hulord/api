@@ -41,7 +41,7 @@ func (b *BaseController) Prepare() {
 		"/v1/user/login",
 		"/v1/menu",
 		"/v1/user/encodePassword",
-		"/v1/artical/Upload"}
+		"/v1/image/Upload"}
 	var isFlag  = false
 	if utils.IsContain(LimitUri,b.Ctx.Request.RequestURI){
 		 isFlag = true
