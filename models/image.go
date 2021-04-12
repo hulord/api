@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"os"
 	"reflect"
 	"strings"
 	"time"
@@ -164,8 +165,21 @@ func DeleteImage(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&Image{Id: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			if err = DeleteFile(v.Url); err == nil {
+				fmt.Println("Number of records deleted in database:", num)
+			}
 		}
+	}
+	return
+}
+
+func DeleteFile(path string) (err error) {
+	comma := strings.Index(path, "static")
+	path = path[comma:]
+	err = os.Remove(path) //删除文件
+	if err != nil {
+		//删除失败,输出错误详细信息
+		return err
 	}
 	return
 }

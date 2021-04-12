@@ -211,6 +211,5 @@ func (c *ImageController) UploadFile() {
 	if err != nil {
 		c.ApiJsonReturn(1, "上传失败", "")
 	}
-
 	c.ApiJsonReturn(0, "上传成功", imageInfo)
 }
