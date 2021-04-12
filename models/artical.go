@@ -33,14 +33,14 @@ type Artical struct {
 	CreateTime time.Time `json:"create_time"          orm:"auto_now_add;type(datetime)"`
 	UpdateTime time.Time `json:"update_time"          orm:"auto_now";type(datetime)`
 	RoleId     int64     `json:"role_id"`
-	Image      *Image    `json:"images"  orm:"rel(fk)"`
-	Tags       []*Tag    `orm:"reverse(many)"`
+	Image      *Image    `json:"images"  orm:"rel(fk);null;on_delete(set_null)"`
+	Tags       []*Tag    `orm:"reverse(many);null;on_delete(set_null)"`
 }
 
 type Tag struct {
 	Id      int      `json:"id"`
 	TagName string   `json:"tag_name"`
-	Artical *Artical `json:"-"                          orm:"rel(fk)"`
+	Artical *Artical `json:"-" orm:"rel(fk)"`
 }
 
 func init() {
@@ -216,6 +216,11 @@ func DeleteArtical(id int) (err error) {
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		o.LoadRelated(&v, "Tags")
+		fmt.Println(v.Image.Id)
+		//删除图片
+		if err := DeleteImage(v.Image.Id); err == nil {
+			return err
+		}
 		if _, err = o.Delete(&v); err == nil {
 			return err
 		}

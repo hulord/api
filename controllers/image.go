@@ -127,7 +127,6 @@ func (c *ImageController) GetAll() {
 	} else {
 		c.ApiJsonReturn(0, "成功", l)
 	}
-	c.ServeJSON()
 }
 
 // Put ...
@@ -162,11 +161,10 @@ func (c *ImageController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	if err := models.DeleteImage(id); err == nil {
-		c.Data["json"] = "OK"
+		c.ApiJsonReturn(0, "删除成功", "")
 	} else {
-		c.Data["json"] = err.Error()
+		c.ApiJsonReturn(1, "删除失败", "")
 	}
-	c.ServeJSON()
 }
 
 // upload file ...

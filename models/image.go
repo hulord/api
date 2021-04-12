@@ -5,21 +5,29 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-	"github.com/astaxie/beego/orm"
 	"time"
+
+	"github.com/astaxie/beego/orm"
 )
 
 type Image struct {
-	Id         int64 `json:"uid"`
-	Name       string `json:"name" orm:"size(128)"`
-	Type       string `orm:"size(50)" json:"-"`
-	Url        string `json:"url" orm:"size(128)"`
-	CreateTime time.Time  `json:"-"          orm:"auto_now_add;type(datetime)"`
-	UpdateTime time.Time  `json:"-"          orm:"auto_now";type(datetime)`
+	Id         int64     `json:"uid"`
+	Name       string    `json:"name" orm:"size(128)"`
+	Type       string    `orm:"size(50)" json:"-"`
+	Url        string    `json:"url" orm:"size(128)"`
+	CreateTime time.Time `json:"-"          orm:"auto_now_add;type(datetime)"`
+	UpdateTime time.Time `json:"-"          orm:"auto_now";type(datetime)`
+}
+
+type List struct {
+	ShowCount   int64         `json:"showCount"`
+	CurrentPage int64         `json:"currentPage"`
+	TotalResult int64         `json:"totalResult"`
+	DataList    []interface{} `json:"dataList"`
 }
 
 func init() {
-	orm.RegisterModelWithPrefix("u_db_",new(Image))
+	orm.RegisterModelWithPrefix("u_db_", new(Image))
 }
 
 // AddImage insert a new Image into database and returns
@@ -44,15 +52,20 @@ func GetImageById(id int64) (v *Image, err error) {
 // GetAllImage retrieves all Image matches certain condition. Returns empty list if
 // no records exist
 func GetAllImage(query map[string]string, fields []string, sortby []string, order []string,
-	offset int64, limit int64) (ml []interface{}, err error) {
+	offset int64, limit int64) (listPage List, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Image))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
 		k = strings.Replace(k, ".", "__", -1)
-		qs = qs.Filter(k, v)
+		if strings.Contains(k, "isnull") {
+			qs = qs.Filter(k, (v == "true" || v == "1"))
+		} else {
+			qs = qs.Filter(k, v)
+		}
 	}
+	qs = qs.RelatedSel()
 	// order by:
 	var sortFields []string
 	if len(sortby) != 0 {
@@ -65,7 +78,7 @@ func GetAllImage(query map[string]string, fields []string, sortby []string, orde
 				} else if order[i] == "asc" {
 					orderby = v
 				} else {
-					return nil, errors.New("Error: Invalid order. Must be either [asc|desc]")
+					return listPage, errors.New("Error: Invalid order. Must be either [asc|desc]")
 				}
 				sortFields = append(sortFields, orderby)
 			}
@@ -79,21 +92,32 @@ func GetAllImage(query map[string]string, fields []string, sortby []string, orde
 				} else if order[0] == "asc" {
 					orderby = v
 				} else {
-					return nil, errors.New("Error: Invalid order. Must be either [asc|desc]")
+					return listPage, errors.New("Error: Invalid order. Must be either [asc|desc]")
 				}
 				sortFields = append(sortFields, orderby)
 			}
 		} else if len(sortby) != len(order) && len(order) != 1 {
-			return nil, errors.New("Error: 'sortby', 'order' sizes mismatch or 'order' size is not 1")
+			return listPage, errors.New("Error: 'sortby', 'order' sizes mismatch or 'order' size is not 1")
 		}
 	} else {
 		if len(order) != 0 {
-			return nil, errors.New("Error: unused 'order' fields")
+			return listPage, errors.New("Error: unused 'order' fields")
 		}
 	}
 
 	var l []Image
-	qs = qs.OrderBy(sortFields...).RelatedSel()
+	qs = qs.OrderBy(sortFields...)
+	var ml []interface{}
+
+	if count, err := qs.Count(); err == nil {
+		listPage.TotalResult = count
+	} else {
+		listPage.TotalResult = 0
+	}
+	listPage.CurrentPage = offset
+	listPage.ShowCount = limit
+
+	offset = (offset - 1) * limit
 	if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
 		if len(fields) == 0 {
 			for _, v := range l {
@@ -110,9 +134,10 @@ func GetAllImage(query map[string]string, fields []string, sortby []string, orde
 				ml = append(ml, m)
 			}
 		}
-		return ml, nil
+		listPage.DataList = ml
+		return listPage, nil
 	}
-	return nil, err
+	return listPage, err
 }
 
 // UpdateImage updates Image by Id and returns error if
