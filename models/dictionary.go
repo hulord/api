@@ -19,7 +19,7 @@ func init() {
 func GetDic(t string) (d []Dictionary,err error) {
 	o := orm.NewOrm()
 	var dic []Dictionary
-	if _,err = o.QueryTable(new(Dictionary)).Filter("type__eq",t).All(&dic);err == nil {
+	if _,err = o.QueryTable(new(Dictionary)).Filter("type__eq",t).Exclude("status_eq", 1).All(&dic);err == nil {
 		return dic,err
 	}
 	return dic,nil
