@@ -37,11 +37,7 @@ type Artical struct {
 	Tags       []*Tag    `orm:"reverse(many);null;on_delete(set_null)"`
 }
 
-type Tag struct {
-	Id      int      `json:"id"`
-	TagName string   `json:"tag_name"`
-	Artical *Artical `json:"-" orm:"rel(fk)"`
-}
+
 
 func init() {
 	orm.RegisterModelWithPrefix("u_db_", new(Artical), new(Tag))
@@ -216,7 +212,6 @@ func DeleteArtical(id int) (err error) {
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		o.LoadRelated(&v, "Tags")
-		fmt.Println(v.Image.Id)
 		//删除图片
 		if err := DeleteImage(v.Image.Id); err == nil {
 			return err

@@ -46,6 +46,7 @@ func (c *MenuController) GetAll() {
 	// var menus Menus
 	// err := json.Unmarshal([]byte(jsonStr), &menus)
 	// fmt.Println(menus,err)
+	
 	m, err := models.GetMenuByRole(c.role)
 	//jsons,_ := json.Marshal(m)
 	if  err != nil {

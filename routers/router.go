@@ -9,6 +9,7 @@ package routers
 
 import (
 	"api/controllers"
+
 	"github.com/astaxie/beego"
 )
 
@@ -25,10 +26,20 @@ func init() {
 			),
 		),
 		beego.NSNamespace("/image",
-		beego.NSInclude(
-			&controllers.ImageController{},
+			beego.NSInclude(
+				&controllers.ImageController{},
+			),
 		),
-	),
+		beego.NSNamespace("/department",
+			beego.NSInclude(
+				&controllers.DepartmentController{},
+			),
+		),
+		beego.NSNamespace("/attendance",
+			beego.NSInclude(
+				&controllers.AttendanceController{},
+			),
+		),
 		beego.NSNamespace("/user",
 			beego.NSInclude(
 				&controllers.UserController{},

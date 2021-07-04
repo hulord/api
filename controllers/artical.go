@@ -33,7 +33,8 @@ func (c *ArticalController) URLMapping() {
 // @Failure 403 :id is empty
 // @router /tags [get]
 func (c *ArticalController) GetTags() {
-	if t, err := models.GetDic("tag"); err == nil {
+	// typeStr := c.Ctx.Input.Param("type")
+	if t, err := models.GetDic("type"); err == nil {
 		c.ApiJsonReturn(0, "", t)
 	} else {
 		c.ApiJsonReturn(1, err.Error(), "")
@@ -230,18 +231,4 @@ func (c *ArticalController) GetTopAndNewList() {
 		c.ApiJsonReturn(1, err.Error(), "")
 	}
 	c.ApiJsonReturn(0, "", l)
-}
-
-// tags ...
-// @Title GetTags
-// @Description get Tags
-// @Success 200 {object} models.Tag
-// @Failure 403 :id is empty
-// @router /department [get]
-func (c *ArticalController) GetTags() {
-	if t, err := models.GetDic("tag"); err == nil {
-		c.ApiJsonReturn(0, "", t)
-	} else {
-		c.ApiJsonReturn(1, err.Error(), "")
-	}
 }

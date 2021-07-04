@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/astaxie/beego/orm"
 )
 
 func init() {
@@ -9,8 +8,9 @@ func init() {
 }
 
 type Tag struct {
-	Id       int 		`json:"id"`
-	Type string		`json:"type"`
-	TagName string		`json:"tagName"`
+	Id      int      `json:"id"`
+	Type    string	 	`json:"type"`
+	TagName string   `json:"tag_name"`
+	Artical *Artical `json:"-" orm:"rel(fk)";on_delete(set_null)"`
 }
 

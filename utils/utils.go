@@ -6,32 +6,31 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
-
 	// "fmt"
 	//"api/models"
 )
 
-func main(){
-	
-}
-type checkParam struct {
+func main() {
 
+}
+
+type checkParam struct {
 }
 
 type TreeList struct {
-	Id         int    `json:"id"`
-	Name       string `json:"name"`
-	Icon       string `json:"icon"`
-	ParentId   int    `json:"parent_id"`
-	Path       string `json:"path"`
-	CreateTime int    `json:"create_time"`
-    Children []TreeList	`json:"children"`
+	Id         int        `json:"id"`
+	Name       string     `json:"name"`
+	Icon       string     `json:"icon"`
+	ParentId   int        `json:"parent_id"`
+	Path       string     `json:"path"`
+	CreateTime int        `json:"create_time"`
+	Children   []TreeList `json:"children"`
 }
 
 //元素是否中数组中
 func IsContain(items []string, item string) bool {
 	for _, eachItem := range items {
-		match,_:=regexp.MatchString(eachItem,item)
+		match, _ := regexp.MatchString(eachItem, item)
 		if match {
 			return true
 		}
@@ -40,40 +39,40 @@ func IsContain(items []string, item string) bool {
 }
 
 //切片中是否存在空值并返回
-func IsEmpty(params map[string]interface{},limitMaps []string) (err error) {
-	 if len(params) != 0 {
-		 for _,val := range limitMaps{
-		 	if params[val]  == "" {
-				return errors.New(val+"不能为空")
+func IsEmpty(params map[string]interface{}, limitMaps []string) (err error) {
+	if len(params) != 0 {
+		for _, val := range limitMaps {
+			if params[val] == "" {
+				return errors.New(val + "不能为空")
 			}
-		 }
-		 return nil
-	 }else{
-		 return errors.New("数据包不能为空")
-	 }
+		}
+		return nil
+	} else {
+		return errors.New("数据包不能为空")
+	}
 }
 
 //数组扁平化
-func Tree(treeMap []map[string]interface{},pid int)[]TreeList{
+func Tree(treeMap []map[string]interface{}, pid int) []TreeList {
 	branch := make([]TreeList, 0)
-	 for j := 0; j < len(treeMap); j++ {
+	for j := 0; j < len(treeMap); j++ {
 		if int(pid) == treeMap[j]["ParentId"].(int) {
 			child := TreeList{
-				Id :		  treeMap[j]["Id"].(int),
-				Name:         treeMap[j]["Name"].(string),
-				Path:         treeMap[j]["Path"].(string),
-				Icon:         treeMap[j]["Icon"].(string),
+				Id:       treeMap[j]["Id"].(int),
+				Name:     treeMap[j]["Name"].(string),
+				Path:     treeMap[j]["Path"].(string),
+				Icon:     treeMap[j]["Icon"].(string),
 				Children: Tree(treeMap, treeMap[j]["Id"].(int)),
 			}
 
 			branch = append(branch, child)
 		}
-	 }
+	}
 	return branch
 }
 
 //struct转map
-func StructToMapDemo(obj interface{}) map[string]interface{}{
+func StructToMapDemo(obj interface{}) map[string]interface{} {
 	obj1 := reflect.TypeOf(obj)
 	obj2 := reflect.ValueOf(obj)
 
@@ -83,7 +82,6 @@ func StructToMapDemo(obj interface{}) map[string]interface{}{
 	}
 	return data
 }
-
 
 // Strval 获取变量的字符串值
 // 浮点型 3.0将会转换成字符串3, "3"
@@ -143,7 +141,12 @@ func Strval(value interface{}) string {
 	return key
 }
 
-
-
-
-
+// json转map函数，通用
+func JSONToMap(str string) map[string]interface{} {
+	var tempMap map[string]interface{}
+	err := json.Unmarshal([]byte(str), &tempMap)
+	if err != nil {
+		panic(err)
+	}
+	return tempMap
+}

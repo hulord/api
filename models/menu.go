@@ -12,7 +12,7 @@ var (
 
 type Role struct {
 	Id int `json:"id"`
-	Name string `orm:"size(100)"`
+	Name string `json:"name";orm:"size(100)"`
 }
 
 type RoleMenus struct {
